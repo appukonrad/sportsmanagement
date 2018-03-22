@@ -59,13 +59,19 @@ $modaltext .= '<img src="'.$picture.'" alt="'.$text.'" width="" />';
 }
             
 if ($url) {
-$modaltext .= '<object type="text/html" data="'.$url.'" width="800px" height="600px" style="overflow:auto;border:5px ridge blue">
+$modaltext .= '<object type="text/html" data="'.$url.'" width="'.$width.'px" height="'.$height.'px" style="overflow:auto;border:5px ridge blue">
 </object>';
 }            
             
 $modaltext .= '<a class="close x" href="#">x</a>';
 $modaltext .= '<a class="close word" href="#">Close</a>';
 $modaltext .= '</div> ';
+$modaltext .= '<style> ';
+$modaltext .= 'div.popup {
+	width		: '.$width.'px; /* width */
+	height		: '.$height.'px; /* height */
+}';
+$modaltext .= '</style> ';            
         } else {
             if ($url) {
                 $modaltext = '<a title="' . $text . '" class="modal" href="' . $url . '">';
