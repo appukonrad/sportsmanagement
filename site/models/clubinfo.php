@@ -27,6 +27,7 @@ class sportsmanagementModelClubInfo extends JModelLegacy {
     static $clubid = 0;
     static $club = null;
     static $new_club_id = 0;
+    static $first_club_id = 0;
     static $historyhtml = '';
     static $historyobj = array();
     var $catssorted = array();
@@ -61,6 +62,52 @@ class sportsmanagementModelClubInfo extends JModelLegacy {
     }
 
     /**
+     * sportsmanagementModelClubInfo::getFirstClubId()
+     * 
+     * @param integer $club_id
+     * @param integer $new_club_id
+     * @return
+     */
+    static function getFirstClubId($club_id=0,$new_club_id=0)
+    {
+    $app = JFactory::getApplication();
+    // Get a db connection.
+    $db = sportsmanagementHelper::getDBConnection(TRUE, self::$cfg_which_database);    
+    $query = $db->getQuery(true);
+    
+    //$app->enqueueMessage(JText::_(__METHOD__.' '.__LINE__.' club_id<br><pre>'.print_r($club_id,true).'</pre>'),'');
+    //$app->enqueueMessage(JText::_(__METHOD__.' '.__LINE__.' new_club_id<br><pre>'.print_r($new_club_id,true).'</pre>'),'');
+    
+    if ( $new_club_id > 0 )
+    {
+    // Select some fields
+    $query->select('id,new_club_id');
+    // From 
+    $query->from('#__sportsmanagement_club');
+    // Where
+    $query->where('id = ' . $new_club_id);
+    $db->setQuery($query);
+    $result_club_id = $db->loadObject();
+    
+    //$app->enqueueMessage(JText::_(__METHOD__.' '.__LINE__.' club_id<br><pre>'.print_r($query->dump(),true).'</pre>'),'');
+    
+    //$app->enqueueMessage(JText::_(__METHOD__.' '.__LINE__.' club_id<br><pre>'.print_r($result_club_id,true).'</pre>'),'');
+    //$app->enqueueMessage(JText::_(__METHOD__.' '.__LINE__.' new_club_id<br><pre>'.print_r($new_club_id,true).'</pre>'),'');
+    
+    
+    self::$first_club_id = $result_club_id->id;    
+    self::getFirstClubId($result_club_id->id,$result_club_id->new_club_id);    
+    }
+    else
+    {
+    //$app->enqueueMessage(JText::_(__METHOD__.' '.__LINE__.' club_id<br><pre>'.print_r($club_id,true).'</pre>'),'');
+    self::$first_club_id = $club_id;
+    return $club_id; 
+    }
+    
+    }
+    
+    /**
      * sportsmanagementModelClubInfo::generateTree()
      * 
      * @param mixed $parent
@@ -68,14 +115,13 @@ class sportsmanagementModelClubInfo extends JModelLegacy {
      */
     static function generateTree($parent, $tree = 0) {
         $app = JFactory::getApplication();
-//$app->enqueueMessage(JText::_(__METHOD__.' '.__LINE__.' arrPCat<br><pre>'.print_r(self::$arrPCat,true).'</pre>'),'Notice');
 
         if (array_key_exists($parent, self::$arrPCat)) {
             self::$historyhtmltree .= '<ul' . ($parent == 0 ? ' class="tree"' : '') . '>';
             foreach (self::$arrPCat[$parent] as $arrC) {
 
                 if (!$tree) {
-                    $treespan = '<span><i class="icon-minus-sign"></i> Child</span>';
+                    $treespan = '<span><i class="icon-minus-sign"></i>'.JHTML::_('image', 'media/com_sportsmanagement/jl_images/arrow_left.png').'</span>';
                 } else {
                     $treespan = '';
                 }
@@ -102,7 +148,6 @@ class sportsmanagementModelClubInfo extends JModelLegacy {
      */
     static function fbTreeRecurse($id, $indent, $list, &$children, $maxlevel = 9999, $level = 0, $type = 1) {
         $app = JFactory::getApplication();
-//$app->enqueueMessage(JText::_(__METHOD__.' '.__LINE__.' children<br><pre>'.print_r($children,true).'</pre>'),'Notice');
 
         if (isset($children[$id]) && $level <= $maxlevel) {
             foreach ($children[$id] as $v) {
@@ -127,14 +172,12 @@ class sportsmanagementModelClubInfo extends JModelLegacy {
                 $list[$id]->section = ($v->new_club_id == 0);
 
                 $list = self::fbTreeRecurse($id, $indent . $spacer, $list, $children, $maxlevel, $level + 1, $type);
-
-//$app->enqueueMessage(JText::_(__METHOD__.' '.__LINE__.' list <br><pre>'.print_r($list ,true).'</pre>'),'Notice');       
+  
             }
         }
         return $list;
     }
 
-    // limit count word
     /**
      * sportsmanagementModelClubInfo::limitText()
      * 
