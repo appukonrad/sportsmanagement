@@ -125,7 +125,7 @@ class sportsmanagementModelClubInfo extends JModelLegacy {
                 } else {
                     $treespan = '';
                 }
-                self::$historyhtmltree .= '<li>' . $treespan . '<a href="' . $arrC['clublink'] . '">' . JHTML::image($arrC['logo_big'], $arrC['name'], 'width="30"') . ' ' . $arrC['name'] . '</a>';
+                self::$historyhtmltree .= '<li>' . $treespan . '<span style="background-color:' . $arrC['color'] . '"><a href="' . $arrC['clublink'] . '">' . JHTML::image($arrC['logo_big'], $arrC['name'], 'width="30"') . ' ' . $arrC['name'] . '</a></span>';
                 self::generateTree($arrC['id'], $tree);
 
                 self::$historyhtmltree .= '</li>';
@@ -299,6 +299,38 @@ class sportsmanagementModelClubInfo extends JModelLegacy {
         return $result;
     }
 
+static function getFirstClub($club_id = 0) {
+        // Reference global application object
+        $app = JFactory::getApplication();
+        // JInput object
+        $jinput = $app->input;
+        $option = $jinput->getCmd('option');
+        // Get a db connection.
+        $db = sportsmanagementHelper::getDBConnection(TRUE, self::$cfg_which_database);
+        $query = $db->getQuery(true);
+        // Select some fields
+                $query->select('c.*');
+	$query->select('CONCAT_WS( \':\', c.id, c.alias ) AS club_slug');
+	$query->select('CONCAT_WS(\':\',p.id,p.alias) as pro_slug');
+                // From 
+                $query->from('#__sportsmanagement_club AS c');
+	$query->join('INNER', '#__sportsmanagement_team AS t on t.club_id = c.id');
+            $query->join('INNER', '#__sportsmanagement_season_team_id AS st on st.team_id = t.id');
+            $query->join('INNER',' #__sportsmanagement_project_team AS pt ON pt.team_id = st.id ');
+            $query->join('INNER',' #__sportsmanagement_project AS p ON p.id = pt.project_id ');
+                // Where
+                $query->where('c.id = ' . $db->Quote($club_id));
+$query->group('c.name');
+                $db->setQuery($query);
+	
+	$firstclub = $db->loadObject();
+	$firstclub->clublink = sportsmanagementHelperRoute::getClubInfoRoute($firstclub->pro_slug, $firstclub->club_slug, null, self::$cfg_which_database);
+	$db->disconnect(); // See: http://api.joomla.org/cms-3/classes/JDatabaseDriver.html#method_disconnect
+                return $firstclub;
+        
+        
+        }
+	
     /**
      * sportsmanagementModelClubInfo::updateHits()
      * 
@@ -329,7 +361,7 @@ class sportsmanagementModelClubInfo extends JModelLegacy {
      * @param integer $inserthits
      * @return
      */
-    static function getClub($inserthits = 0) {
+    static function getClub($inserthits = 0,$club_id = 0) {
         // Reference global application object
         $app = JFactory::getApplication();
         // JInput object
@@ -340,8 +372,16 @@ class sportsmanagementModelClubInfo extends JModelLegacy {
         $query = $db->getQuery(true);
 
         self::$projectid = $jinput->getInt("p", 0);
+	    
+	    if ( $club_id )
+	    {
+		    self::$clubid = $club_id;
+	    }
+	    else
+	    {
         self::$clubid = $jinput->getInt("cid", 0);
-
+	    }
+	    
         self::updateHits(self::$clubid, $inserthits);
 
         if (is_null(self::$club)) {
@@ -379,7 +419,7 @@ class sportsmanagementModelClubInfo extends JModelLegacy {
         $subquery2 = $db->getQuery(true);
 
         $teams = array(0);
-        if (self::$clubid > 0) {
+        if ( self::$clubid && self::$projectid ) {
 
             $query->select('t.id,t.name as team_name,t.short_name as team_shortcut,t.info as team_description');
             $query->select('CONCAT_WS( \':\', t.id, t.alias ) AS team_slug');
@@ -620,10 +660,19 @@ class sportsmanagementModelClubInfo extends JModelLegacy {
                 $row->pid = 0;
             }
 // store parent and its children into the $arrPCat Array
+if ( $row->id == self::$clubid )
+{
+$color = 'lawngreen';
+}
+else
+{
+$color = '';
+}		
             self::$arrPCat[$pt][] = Array('id' => $row->id,
                 'name' => $row->name,
                 'pid' => $row->pid,
                 'slug' => $row->slug,
+		'color' => $color, 
                 'logo_big' => $row->logo_big,
                 'clublink' => sportsmanagementHelperRoute::getClubInfoRoute($row->pid, $row->slug)
             );
