@@ -1,9 +1,9 @@
 <?php
-/** SportsManagement ein Programm zur Verwaltung für alle Sportarten
+/** SportsManagement ein Programm zur Verwaltung fÃ¼r alle Sportarten
  * @version   1.0.05
  * @file      view.html.php
  * @author    diddipoeler, stony, svdoldie und donclumsy (diddipoeler@gmx.de)
- * @copyright Copyright: © 2013 Fussball in Europa http://fussballineuropa.de/ All rights reserved.
+ * @copyright Copyright: Â© 2013 Fussball in Europa http://fussballineuropa.de/ All rights reserved.
  * @license   This file is part of SportsManagement.
  * @package   sportsmanagement
  * @subpackage predictionranking
@@ -13,10 +13,7 @@
 defined('_JEXEC') or die('Restricted access');
 
 // pagination
-require_once (JPATH_COMPONENT . DS . 'helpers' . DS . 'pagination.php');
-
-jimport('joomla.application.component.view');
-
+//require_once (JPATH_COMPONENT . DS . 'helpers' . DS . 'pagination.php');
 
 /**
  * sportsmanagementViewPredictionRanking
@@ -41,7 +38,18 @@ class sportsmanagementViewpredictionranking extends sportsmanagementView
 		$this->predictionGame = sportsmanagementModelPrediction::getPredictionGame();
         $this->allowedAdmin = sportsmanagementModelPrediction::getAllowed();
 
+$this->limit = $this->model->getLimit();
+$this->limitstart = $this->model->getLimitStart();
+$this->ausgabestart = $this->limitstart + 1;
+$this->ausgabeende = $this->limitstart + $this->limit;
+		
+//$this->app->enqueueMessage(JText::_(__METHOD__.' '.__LINE__.' limit <br><pre>'.print_r($this->limit,true).'</pre>'),'');
+//$this->app->enqueueMessage(JText::_(__METHOD__.' '.__LINE__.' limitstart <br><pre>'.print_r($this->limitstart,true).'</pre>'),'');
+//$this->app->enqueueMessage(JText::_(__METHOD__.' '.__LINE__.' ausgabestart <br><pre>'.print_r($this->ausgabestart,true).'</pre>'),'');
+//$this->app->enqueueMessage(JText::_(__METHOD__.' '.__LINE__.' ausgabeende <br><pre>'.print_r($this->ausgabeende,true).'</pre>'),'');
+		
 	// push data into the template
+	$this->state = $this->get('State');	
 	$this->items = $this->get('Data');	
 	$this->pagination =$this->get('Pagination');
     

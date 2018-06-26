@@ -27,34 +27,9 @@
   }
   else
   {
-
-  if ( COM_SPORTSMANAGEMENT_SHOW_DEBUG_INFO )
-  {
-  $my_text = 'config <pre>'.print_r($this->config,true).'</pre>';
-  $my_text .= 'project<pre>'.print_r($this->project,true).'</pre>';
-  $my_text .= 'teams<pre>'.print_r($this->teams,true).'</pre>';
-
-  //$my_text .= 'player view teams <pre>'.print_r($this->teams,true).'</pre>';
-  //$my_text .= 'player view person_position <pre>'.print_r($this->person_position,true).'</pre>';
-  //$my_text .= 'player view person_parent_positions <pre>'.print_r($this->person_parent_positions,true).'</pre>';
-  //$my_text .= 'stats <br><pre>'.print_r($this->stats,true).'</pre>';
-  //$my_text .= 'gamesstats <br><pre>'.print_r($this->gamesstats,true).'</pre>';
-  //
-  //$my_text .= 'historyPlayer <br><pre>'.print_r($this->historyPlayer,true).'</pre>';
-  //
-  //$my_text .= 'person_position <pre>'.print_r($this->person_position,true).'</pre>';
-  //$my_text .= 'person_parent_positions <pre>'.print_r($this->person_parent_positions,true).'</pre>';
-  //$my_text .= 'position_name <pre>'.print_r($this->teamPlayer->position_name,true).'</pre>';
-
-  sportsmanagementHelper::setDebugInfoText(__METHOD__,__FUNCTION__,'sportsmanagementViewRankingdefault',__LINE__,$my_text);
-
-  }
-
-
+  
   ?>
   <script>
-
-
 
   </script>
 
@@ -78,6 +53,12 @@
   echo $this->loadTemplate('rankingnav');
   }
 
+    if ( $this->config['show_result_tabs'] == 'show_tabs' )
+    {
+    echo $this->loadTemplate('tabs');  
+    }
+    else
+    {
   if ( $this->config['show_ranking'] )
   {
   /**
@@ -229,14 +210,12 @@ if ($this->config['show_table_1'] ||
                 }
 
                 if ($this->overallconfig['show_project_rss_feed']) {
-                    //if ( !empty($this->rssfeedoutput) )
-//       {
-//       echo $this->loadTemplate('rssfeed-table'); 
-//       }
                     if ($this->rssfeeditems) {
                         echo $this->loadTemplate('rssfeed');
                     }
                 }
+    
+  }    
                 ?>
 <div>
 <?PHP

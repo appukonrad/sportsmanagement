@@ -80,7 +80,7 @@ else
 //echo __FILE__.' '.__LINE__.' roundID<br><pre>'.print_r(sportsmanagementModelPredictionEntry::$roundID,true).'</pre>';
 			if ( (int)sportsmanagementModelPrediction::$roundID > sportsmanagementModelPrediction::getProjectRounds(sportsmanagementModelPrediction::$pjID)) 
             {
-                sportsmanagementModelPrediction::$roundID = $this->model->_projectRoundsCount;
+                sportsmanagementModelPrediction::$roundID = sportsmanagementModelPrediction::$_projectRoundsCount;
                 }
 //echo __FILE__.' '.__LINE__.' roundID<br><pre>'.print_r(sportsmanagementModelPredictionEntry::$roundID,true).'</pre>';
 			$memberProjectJokersCount = sportsmanagementModelPrediction::getMemberPredictionJokerCount($this->predictionMember->user_id,
@@ -255,34 +255,34 @@ When viewing on anything larger than 768px wide, you will not see any difference
 
 					if (empty(sportsmanagementModelPrediction::$_predictionMember->fav_team))
                     {
-                        sportsmanagementModelPrediction::$_predictionMember->fav_team = '0,0';
-                        }
+                    sportsmanagementModelPrediction::$_predictionMember->fav_team = '0,0';
+                    }
                         
 					$sFavTeamsList = explode(';',sportsmanagementModelPrediction::$_predictionMember->fav_team);
 					foreach ($sFavTeamsList AS $key => $value)
                     {
-                        $dFavTeamsList[]=explode(',',$value);
-                        }
+                    $dFavTeamsList[] = explode(',',$value);
+                    }
                         
 					foreach ($dFavTeamsList AS $key => $value)
                     {
-                        $favTeamsList[$value[0]]=$value[1];
-                        }
+                    $favTeamsList[$value[0]] = $value[1];
+                    }
 
 					if (empty(sportsmanagementModelPrediction::$_predictionMember->champ_tipp))
                     {
-                        sportsmanagementModelPrediction::$_predictionMember->champ_tipp = '0,0';
-                        }
+                    sportsmanagementModelPrediction::$_predictionMember->champ_tipp = '0,0';
+                    }
                         
 					$sChampTeamsList = explode(';',sportsmanagementModelPrediction::$_predictionMember->champ_tipp);
 					foreach ($sChampTeamsList AS $key => $value)
                     {
-                        $dChampTeamsList[]=explode(',',$value);
-                        }
+                    $dChampTeamsList[] = explode(',',$value);
+                    }
 					foreach ($dChampTeamsList AS $key => $value)
                     {
-                        $champTeamsList[$value[0]] = $value[1];
-                        }
+                    $champTeamsList[$value[0]] = $value[1];
+                    }
 
 					$showSaveButton=false;
 					if (count($roundResults) > 0)
@@ -338,12 +338,12 @@ echo '<br />this->use_tipp_admin<pre>~' . print_r($this->config['use_tipp_admin'
 						<tr class='<?php echo $class; ?>'>
 							<td class="td_c">
 								<?php
-                // das datum des spiels
-// 								echo JHTML::date($result->match_date,JText::_('COM_SPORTSMANAGEMENT_GLOBAL_CALENDAR_DATE'));
-// 								echo ' - ';
-// 								echo JHTML::date(date("Y-m-d H:i:s",$matchTimeDate),$this->config['time_format']); 
-                //echo $result->match_date;
-                echo JHtml::date($result->match_date, 'd.m.Y H:i', false);
+/**
+ * das datum des spiels
+ */
+$jdate = JFactory::getDate($result->match_date);
+$jdate->setTimezone(new DateTimeZone($predictionProjectSettings->timezone));
+echo $jdate->format('d.m.Y H:i'); //outputs 01:00:00
 								?>
 							</td>
 								<?php
@@ -383,19 +383,16 @@ echo '<br />this->use_tipp_admin<pre>~' . print_r($this->config['use_tipp_admin'
 									}
 									$imgTitle = JText::sprintf('COM_SPORTSMANAGEMENT_PRED_ENTRY_LOGO_OF', $homeName);
 									//echo JHTML::image($logo_home,$imgTitle,array(' width' => 20,' title' => $imgTitle));
-                                    ?>                                    
                                     
-<a href="<?php echo JURI::root().$logo_home;?>" title="<?php echo $imgTitle;?>" data-toggle="modal" data-target="#modal<?php echo $result->projectteam1_id;?>">
-<img src="<?php echo JURI::root().$logo_home;?>" alt="<?php echo $imgTitle;?>" width="20" />
-</a>        
-<div class="modal fade" id="modal<?php echo $result->projectteam1_id;?>" tabindex="-1" role="dialog" aria-labelledby="beispielModalLabel" aria-hidden="true">
-<div class="modal-header">
-<button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span></button>
-</div>
-<?PHP
-echo JHtml::image(JURI::root().$logo_home, $imgTitle, array('title' => $imgTitle,'class' => "img-rounded" ));      
-?>
-</div>
+echo sportsmanagementHelperHtml::getBootstrapModalImage('tippteaminfohome' . $result->projectteam1_id,
+$logo_home,
+$imgTitle,
+20,
+'',							
+$this->modalwidth,
+$this->modalheight,
+2);                                    
+?>                                    
                                     
                                     <?PHP 
                                     
@@ -483,37 +480,37 @@ echo JHtml::image(JURI::root().$logo_away, $imgTitle, array('title' => $imgTitle
 							</td>
 							<td class="td_c">
 								<?php
-								echo '<input	type="hidden" name="cids[' . $predictionProject->project_id . '][]"
+								echo '<input type="hidden" name="cids[' . $predictionProject->project_id . '][]"
 													value="' . $result->id . '" />';
-								echo '<input	type="hidden"
+								echo '<input type="hidden"
 													name="prids[' . $predictionProject->project_id . '][' . $result->id . ']"
 													value="' . $result->prid . '" />';
 
                 // welcher tippmodus
-								if ($predictionProject->mode=='0')	// Tipp in normal mode
+								if ( $predictionProject->mode == 0 )	// Tipp in normal mode
 								{
-									echo $this->createStandardTippSelect(	$result->tipp_home,
+									echo $this->createStandardTippSelect($result->tipp_home,
                                     $result->tipp_away,
                                     $result->tipp,
-																					$predictionProject->project_id,
-                                                                                    $result->id,
-																					$this->config['seperator'],
-                                                                                    $tippAllowed);
+									$predictionProject->project_id,
+                                    $result->id,
+									$this->config['seperator'],
+                                    $tippAllowed);
 								}
 								else	// Tipp in toto mode
 								{
-									echo $this->createTotoTippSelect(	$result->tipp_home,
+									echo $this->createTotoTippSelect($result->tipp_home,
                                     $result->tipp_away,
                                     $result->tipp,
-																				$predictionProject->project_id,
-                                                                                $result->id,
-                                                                                $tippAllowed);
+									$predictionProject->project_id,
+                                    $result->id,
+                                    $tippAllowed);
 								}
 								
 								?>
 							</td>
 							<?php
-							if (($predictionProject->joker) && ($predictionProject->mode==0))
+							if ( ($predictionProject->joker) && ( $predictionProject->mode == 0 ) )
 							{
 							?>
 								<td class="td_c">

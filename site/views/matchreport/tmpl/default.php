@@ -12,6 +12,13 @@
 defined( '_JEXEC' ) or die( 'Restricted access' );
 JHtml::_('behavior.tooltip');
 
+/*
+echo '<pre>'.print_r($this->matchplayerpositions,true).'</pre>';
+echo '<pre>'.print_r($this->matchplayers,true).'</pre>';
+echo '<pre>'.print_r($this->matchstaffpositions,true).'</pre>';
+echo '<pre>'.print_r($this->matchstaffs,true).'</pre>';
+*/
+	
 // Make sure that in case extensions are written for mentioned (common) views,
 // that they are loaded i.s.o. of the template of this view
 $templatesToLoad = array('globalviews');
@@ -85,12 +92,7 @@ echo $this->loadTemplate('debug');
     
     if ( !empty( $this->matchevents ) )
 	{
-	    /*
-    if ( !$this->config['show_timeline_under_results'] )
-	{
-		echo $this->loadTemplate('timeline');
-	}
-	*/    
+	      
     }
     
   // ################################################################
@@ -107,9 +109,18 @@ echo $this->loadTemplate('debug');
 	}
 	if ( $this->config['show_roster'] )
 	{
+        if ( $this->matchplayerpositions )
+        {
         $output['COM_SPORTSMANAGEMENT_MATCHREPORT_STARTING_LINE_UP_PLAYER'] = $this->config['show_roster_card'];
+        }
+        if ( $this->matchstaffpositions )
+        {
         $output['COM_SPORTSMANAGEMENT_MATCHREPORT_STARTING_LINE_UP_STAFF'] = 'staff';
+        }
+        if ( $this->matchplayerpositions )
+        {
         $output['COM_SPORTSMANAGEMENT_MATCHREPORT_SUBSTITUTES'] = 'subst';
+        }
 	}
     if ( $this->config['show_roster_playground'] )
 	{
@@ -123,14 +134,14 @@ echo $this->loadTemplate('debug');
 			switch ($this->config['use_tabs_events'])
 			{
 				case 0:
-					/** No tabs */
+					// No tabs 
 					if ( !empty( $this->eventtypes ) ) 
                     {
 						$output['COM_SPORTSMANAGEMENT_MATCHREPORT_EVENTS'] = 'events';
 					}
 					break;
 				case 1:
-					/** Tabs */
+					// Tabs
 					if ( !empty( $this->eventtypes ) ) 
                     {
 						//echo $this->loadTemplate('events_tabs');
@@ -138,8 +149,7 @@ echo $this->loadTemplate('debug');
 					}
 					break;
 				case 2:
-					/** Table/Ticker layout */
-					//echo $this->loadTemplate('events_ticker');
+					// Table/Ticker layout 
                     $output['COM_SPORTSMANAGEMENT_MATCHREPORT_EVENTS'] = 'events_ticker';
 					break;
 			}

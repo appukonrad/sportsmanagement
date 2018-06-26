@@ -1,47 +1,18 @@
 <?php
-
-/** SportsManagement ein Programm zur Verwaltung f�r alle Sportarten
- * @version         1.0.05
- * @file                agegroup.php
- * @author                diddipoeler, stony, svdoldie und donclumsy (diddipoeler@gmx.de)
- * @copyright        Copyright: � 2013 Fussball in Europa http://fussballineuropa.de/ All rights reserved.
- * @license                This file is part of SportsManagement.
- *
- * SportsManagement is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * SportsManagement is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with SportsManagement.  If not, see <http://www.gnu.org/licenses/>.
- *
- * Diese Datei ist Teil von SportsManagement.
- *
- * SportsManagement ist Freie Software: Sie k�nnen es unter den Bedingungen
- * der GNU General Public License, wie von der Free Software Foundation,
- * Version 3 der Lizenz oder (nach Ihrer Wahl) jeder sp�teren
- * ver�ffentlichten Version, weiterverbreiten und/oder modifizieren.
- *
- * SportsManagement wird in der Hoffnung, dass es n�tzlich sein wird, aber
- * OHNE JEDE GEW�HELEISTUNG, bereitgestellt; sogar ohne die implizite
- * Gew�hrleistung der MARKTF�HIGKEIT oder EIGNUNG F�R EINEN BESTIMMTEN ZWECK.
- * Siehe die GNU General Public License f�r weitere Details.
- *
- * Sie sollten eine Kopie der GNU General Public License zusammen mit diesem
- * Programm erhalten haben. Wenn nicht, siehe <http://www.gnu.org/licenses/>.
- *
- * Note : All ini files need to be saved as UTF-8 without BOM
+/** SportsManagement ein Programm zur Verwaltung für alle Sportarten
+ * @version   1.0.05
+ * @file      predictionresults.php
+ * @author    diddipoeler, stony, svdoldie und donclumsy (diddipoeler@gmx.de)
+ * @copyright Copyright: © 2013 Fussball in Europa http://fussballineuropa.de/ All rights reserved.
+ * @license   This file is part of SportsManagement.
+ * @subpackage predictionresults
  */
+ 
 // Check to ensure this file is included in Joomla!
 defined('_JEXEC') or die('Restricted access');
 
 jimport('joomla.application.component.model');
-require_once(JPATH_COMPONENT_SITE . DS . 'models' . DS . 'prediction.php' );
+//require_once(JPATH_COMPONENT_SITE . DS . 'models' . DS . 'prediction.php' );
 
 /**
  * sportsmanagementModelPredictionResults
@@ -52,7 +23,7 @@ require_once(JPATH_COMPONENT_SITE . DS . 'models' . DS . 'prediction.php' );
  * @version 2014
  * @access public
  */
-class sportsmanagementModelPredictionResults extends JModelLegacy {
+class sportsmanagementModelPredictionResults extends JSMModelList {
 
     var $predictionGameID = 0;
 
@@ -70,7 +41,8 @@ class sportsmanagementModelPredictionResults extends JModelLegacy {
     var $config = array();
     var $configavatar = array();
     static $roundID = 0;
-
+static $limitstart = 0;
+static $limit = 0;
     /**
      * sportsmanagementModelPredictionResults::__construct()
      * 
@@ -151,28 +123,86 @@ class sportsmanagementModelPredictionResults extends JModelLegacy {
 
         //$this->pggrouprank			= JFactory::getApplication()->input->getInt('pggrouprank',		0);
         //$this->predictionGameID	= $jinput->getInt('prediction_id',0);
-
+/*
         if (JFactory::getApplication()->input->getVar("view") == 'predictionresults') {
-            // Get pagination request variables
-            $limit = $app->getUserStateFromRequest('global.list.limit', 'limit', $app->getCfg('list_limit'), 'int');
-            $limitstart = $jinput->getVar('limitstart', 0, '', 'int');
-
-            // In case limit has been changed, adjust it
-            $limitstart = ($limit != 0 ? (floor($limitstart / $limit) * $limit) : 0);
-
-            $this->setState('limit', $limit);
-            $this->setState('limitstart', $limitstart);
+            self::$limit = $jinput->getInt('limit',$app->getCfg('list_limit'));
+	self::$limitstart = $jinput->getInt('start',0);
+	// In case limit has been changed, adjust it
+	//$limitstart = ($limit != 0 ? (floor($limitstart / $limit) * $limit) : 0);
+ 
+	$this->setState('limit', self::$limit);
+	$this->setState('limitstart', self::$limitstart);
         }
-
+*/
         $getDBConnection = sportsmanagementHelper::getDBConnection();
         parent::setDbo($getDBConnection);
     }
 
+public function getStart()
+{
+    // Reference global application object
+        $app = JFactory::getApplication();
+        // JInput object
+        $jinput = $app->input;
+    //$limitstart = $this->getUserStateFromRequest($this->context.'.limitstart', 'limitstart');
+    $this->setState('list.start', self::$limitstart );
+    
+    $store = $this->getStoreId('getstart');
+    // Try to load the data from internal storage.
+    if (isset($this->cache[$store]))
+    {
+        return $this->cache[$store];
+    }
+    $start = $this->getState('list.start');
+    $limit = $this->getState('list.limit');
+    $total = $this->getTotal();
+    if ($start > $total - $limit)
+    {
+        $start = max(0, (int) (ceil($total / $limit) - 1) * $limit);
+    }
+    
+//    $app->enqueueMessage(JText::_(__METHOD__.' '.__LINE__.' limitstart<br><pre>'.print_r($limitstart,true).'</pre>'),'');
+//    $app->enqueueMessage(JText::_(__METHOD__.' '.__LINE__.' this->limitstart<br><pre>'.print_r($this->limitstart,true).'</pre>'),'');
+//    $app->enqueueMessage(JText::_(__METHOD__.' '.__LINE__.' store<br><pre>'.print_r($store,true).'</pre>'),'');
+//    $app->enqueueMessage(JText::_(__METHOD__.' '.__LINE__.' list.start<br><pre>'.print_r($this->getState('list.start'),true).'</pre>'),'');
+//    $app->enqueueMessage(JText::_(__METHOD__.' '.__LINE__.' list.limit<br><pre>'.print_r($this->getState('list.limit'),true).'</pre>'),'');
+    // Add the total to the internal cache.
+    $this->cache[$store] = $start;
+    return $this->cache[$store];
+}	
+	
+protected function populateState($ordering = null, $direction = null)
+	{
+$app = JFactory::getApplication();
+$value = $app->getUserStateFromRequest('global.list.limit', 'limit', $app->getCfg('list_limit'), 'uint');
+self::$limit = $value;
+$this->setState('list.limit', self::$limit);
+$value = $app->getUserStateFromRequest($this->context . '.limitstart', 'limitstart', 0);
+self::$limitstart = (self::$limit != 0 ? (floor($value / self::$limit) * self::$limit) : 0);
+$this->setState('list.start', self::$limitstart);
+//$app->enqueueMessage(JText::_(__METHOD__.' limit <br><pre>'.print_r(self::$limit,true).'</pre>'),'');
+//$app->enqueueMessage(JText::_(__METHOD__.' limitstart <br><pre>'.print_r(self::$limitstart,true).'</pre>'),'');
+//$app->enqueueMessage(JText::_(__METHOD__.' limit cfg<br><pre>'.print_r($app->getCfg('list_limit', 0),true).'</pre>'),'');
+		
+	
+}
+	
+function getLimit()
+	{
+		return $this->getState('list.limit');
+	}
+	
+	function getLimitStart()
+	{
+		return $this->getState('list.start');
+	}
+ 
     /**
      * sportsmanagementModelPredictionResults::getPagination()
      * 
      * @return
      */
+	/*
     function getPagination() {
         // Load the content if it doesn't already exist
         if (empty($this->_pagination)) {
@@ -181,7 +211,7 @@ class sportsmanagementModelPredictionResults extends JModelLegacy {
         }
         return $this->_pagination;
     }
-
+*/
     /**
      * sportsmanagementModelPredictionResults::getTotal()
      * 
@@ -207,7 +237,7 @@ class sportsmanagementModelPredictionResults extends JModelLegacy {
         if (empty($this->_data)) {
             //$query = $this->_buildQuery();
             $query = sportsmanagementModelPrediction::getPredictionMembersList($this->config, $this->configavatar, true);
-            $this->_data = $this->_getList($query, $this->getState('limitstart'), $this->getState('limit'));
+            $this->_data = $this->_getList($query);
         }
         return $this->_data;
     }

@@ -11,7 +11,6 @@
 
 defined('_JEXEC') or die('Restricted access');
 
-jimport('joomla.application.component.view');
 jimport('joomla.filesystem.file');
 
 /**
@@ -253,6 +252,9 @@ class sportsmanagementViewRanking extends sportsmanagementView {
 
         if (!isset($this->config['table_class'])) {
             $this->config['table_class'] = 'table';
+        }
+        if (!isset($this->config['show_result_tabs'])) {
+            $this->config['show_result_tabs'] = 'no_tabs';
         }
     }
 

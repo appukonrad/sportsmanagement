@@ -41,6 +41,11 @@ class sportsmanagementViewTeamPlan extends sportsmanagementView
 		
 		sportsmanagementHelperHtml::$project = $this->project;
 		
+        if ( $this->config['show_date_image'] )
+        {
+        $this->document->addStyleSheet(JURI::base().'components/'.$this->option.'/assets/css/calendar.css');
+        }    
+        
 		if (isset($this->project))
 		{
 			$this->rounds = sportsmanagementModelProject::getRounds($this->config['plan_order'],sportsmanagementModelTeamPlan::$cfg_which_database);
@@ -95,8 +100,8 @@ class sportsmanagementViewTeamPlan extends sportsmanagementView
 	 */
 	function showEventsContainerInResults($matchInfo,$projectevents,$matchevents,$substitutions=null,$config)
 	{
-		$output='';
-		$result='';
+		$output = '';
+		$result = '';
 
 		if ($this->config['use_tabs_events'])
 		{

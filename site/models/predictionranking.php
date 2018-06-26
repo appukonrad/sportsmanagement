@@ -13,14 +13,14 @@
 defined( '_JEXEC' ) or die( 'Restricted access' );
 
 //jimport( 'joomla.application.component.model' );
-jimport('joomla.application.component.modelitem');
+//jimport('joomla.application.component.modelitem');
 jimport('joomla.filesystem.file');
 jimport('joomla.utilities.array');
 jimport('joomla.utilities.arrayhelper') ;
 jimport( 'joomla.utilities.utility' );
 
-require_once(JPATH_SITE.DS.JSM_PATH.DS.'models'.DS.'project.php' );
-require_once(JPATH_SITE.DS.JSM_PATH.DS.'models'.DS.'prediction.php' );
+//require_once(JPATH_SITE.DS.JSM_PATH.DS.'models'.DS.'project.php' );
+//require_once(JPATH_SITE.DS.JSM_PATH.DS.'models'.DS.'prediction.php' );
 
 /**
  * sportsmanagementModelPredictionRanking
@@ -31,11 +31,13 @@ require_once(JPATH_SITE.DS.JSM_PATH.DS.'models'.DS.'prediction.php' );
  * @version 2014
  * @access public
  */
-class sportsmanagementModelPredictionRanking extends JModelLegacy
+class sportsmanagementModelPredictionRanking extends JSMModelList
 {
 	var $_roundNames = null;
     var $predictionGameID = 0;
-    
+static $limitstart = 0;
+static $limit = 0;
+	
    /**
    * Items total
    * @var integer
@@ -92,25 +94,93 @@ class sportsmanagementModelPredictionRanking extends JModelLegacy
         sportsmanagementModelPrediction::$type = $jinput->getInt('type',0);
         sportsmanagementModelPrediction::$page = $jinput->getInt('page',1);
 
+	//self::$limitstart = $jinput->getVar('limitstart', 0, '', 'int');
+		
+/*
 if ( $jinput->getVar( "view") == 'predictionranking' )
 {
 	// Get pagination request variables
-	$limit = $app->getUserStateFromRequest('global.list.limit', 'limit', $app->getCfg('list_limit'), 'int');
-	$limitstart = $jinput->getVar('limitstart', 0, '', 'int');
+	//$limit = $app->getUserStateFromRequest('global.list.limit', 'limit', $app->getCfg('list_limit'), 'int');
+	//$limitstart = $jinput->getVar('limitstart', 0, '', 'int');
 
+	self::$limit = $jinput->getInt('limit',$app->getCfg('list_limit'));
+	self::$limitstart = $jinput->getInt('start',0);
 	// In case limit has been changed, adjust it
-	$limitstart = ($limit != 0 ? (floor($limitstart / $limit) * $limit) : 0);
+	//$limitstart = ($limit != 0 ? (floor($limitstart / $limit) * $limit) : 0);
  
-	$this->setState('limit', $limit);
-	$this->setState('limitstart', $limitstart);
+	$this->setState('limit', self::$limit);
+	$this->setState('limitstart', self::$limitstart);
 }
-
+*/
   
     $getDBConnection = sportsmanagementHelper::getDBConnection();
     parent::setDbo($getDBConnection);
     
 	}
 
+	
+public function getStart()
+{
+    // Reference global application object
+        $app = JFactory::getApplication();
+        // JInput object
+        $jinput = $app->input;
+    //$limitstart = $this->getUserStateFromRequest($this->context.'.limitstart', 'limitstart');
+    $this->setState('list.start', self::$limitstart );
+    
+    $store = $this->getStoreId('getstart');
+    // Try to load the data from internal storage.
+    if (isset($this->cache[$store]))
+    {
+        return $this->cache[$store];
+    }
+    $start = $this->getState('list.start');
+    $limit = $this->getState('list.limit');
+    $total = $this->getTotal();
+    if ($start > $total - $limit)
+    {
+        $start = max(0, (int) (ceil($total / $limit) - 1) * $limit);
+    }
+    
+//    $app->enqueueMessage(JText::_(__METHOD__.' '.__LINE__.' limitstart<br><pre>'.print_r($limitstart,true).'</pre>'),'');
+//    $app->enqueueMessage(JText::_(__METHOD__.' '.__LINE__.' this->limitstart<br><pre>'.print_r($this->limitstart,true).'</pre>'),'');
+//    $app->enqueueMessage(JText::_(__METHOD__.' '.__LINE__.' store<br><pre>'.print_r($store,true).'</pre>'),'');
+//    $app->enqueueMessage(JText::_(__METHOD__.' '.__LINE__.' list.start<br><pre>'.print_r($this->getState('list.start'),true).'</pre>'),'');
+//    $app->enqueueMessage(JText::_(__METHOD__.' '.__LINE__.' list.limit<br><pre>'.print_r($this->getState('list.limit'),true).'</pre>'),'');
+    // Add the total to the internal cache.
+    $this->cache[$store] = $start;
+    return $this->cache[$store];
+}	
+
+protected function populateState($ordering = null, $direction = null)
+	{
+$app = JFactory::getApplication();
+$value = $app->getUserStateFromRequest('global.list.limit', 'limit', $app->getCfg('list_limit'), 'uint');
+self::$limit = $value;
+$this->setState('list.limit', self::$limit);
+$value = $app->getUserStateFromRequest($this->context . '.limitstart', 'limitstart', 0);
+self::$limitstart = (self::$limit != 0 ? (floor($value / self::$limit) * self::$limit) : 0);
+$this->setState('list.start', self::$limitstart);
+
+
+
+//$app->enqueueMessage(JText::_(__METHOD__.' limit <br><pre>'.print_r(self::$limit,true).'</pre>'),'');
+//$app->enqueueMessage(JText::_(__METHOD__.' limitstart <br><pre>'.print_r(self::$limitstart,true).'</pre>'),'');
+//$app->enqueueMessage(JText::_(__METHOD__.' limit cfg<br><pre>'.print_r($app->getCfg('list_limit', 0),true).'</pre>'),'');
+		
+	
+}
+	
+	
+	function getLimit()
+	{
+		return $this->getState('list.limit');
+	}
+	
+	function getLimitStart()
+	{
+		return $this->getState('list.start');
+	}
 /**
  * sportsmanagementModelPredictionRanking::_buildQuery()
  * 
@@ -160,7 +230,8 @@ function getData()
      {
  	    $query = self::_buildQuery();
         //$query = $this->getPredictionMember();
- 	    $this->_data = $this->_getList($query, $this->getState('limitstart'), $this->getState('limit'));	
+ 	    //$this->_data = $this->_getList($query, $this->getState('limitstart'), $this->getState('limit'));	
+	$this->_data = $this->_getList($query);		
  	}
  	return $this->_data;
   }
@@ -187,6 +258,7 @@ function getTotal()
  * 
  * @return
  */
+	/*
 function getPagination()
   {
  	// Load the content if it doesn't already exist
@@ -197,7 +269,7 @@ function getPagination()
  	}
  	return $this->_pagination;
   }    
- 
+ */
 	
     /**
      * sportsmanagementModelPredictionRanking::getChampLogo()
@@ -216,15 +288,17 @@ function getPagination()
     {
     $sChampTeamsList = explode(';',$champ_tipp);
     //$app->enqueueMessage(JText::_(__METHOD__.' '.__LINE__.' sChampTeamsList'.'<pre>'.print_r($sChampTeamsList,true).'</pre>' ),'');
-	foreach ($sChampTeamsList AS $key => $value)
+foreach ($sChampTeamsList AS $key => $value)
     {
     $dChampTeamsList[] = explode(',',$value);
     }
-	foreach ($dChampTeamsList AS $key => $value)
+foreach ($dChampTeamsList AS $key => $value)
     {
     $champTeamsList[$value[0]] = $value[1];
     }    
     
+if ( isset($champTeamsList[(int)$ProjectID]) )
+{
     $projectteamid = $champTeamsList[(int)$ProjectID];  
     if ( $projectteamid )
     {
@@ -233,6 +307,8 @@ function getPagination()
     //$app->enqueueMessage(JText::_(__METHOD__.' '.__LINE__.' teaminfo'.'<pre>'.print_r($teaminfo,true).'</pre>' ),'');
     return $teaminfo;
     }
+    }
+	    
     }
     else
     {

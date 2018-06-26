@@ -252,7 +252,17 @@ $link = sportsmanagementHelperRoute::getSportsmanagementRoute('results',$routepa
 				<?php
 				if (!is_null($this->ptid))
 				{
-				$link = sportsmanagementHelperRoute::getIcalRoute($this->project->id,$this->teams[$this->ptid]->team_id,null,null);
+$routeparameter = array();
+$routeparameter['cfg_which_database'] = JFactory::getApplication()->input->getInt('cfg_which_database',0);
+$routeparameter['s'] = JFactory::getApplication()->input->getInt('s',0);
+$routeparameter['p'] = $this->project->id;
+$routeparameter['tid'] = $this->teams[$this->ptid]->team_id;
+$routeparameter['division'] = 0;
+$routeparameter['mode'] = 0;
+$routeparameter['ptid'] = $this->ptid;
+$link = sportsmanagementHelperRoute::getSportsmanagementRoute('ical',$routeparameter);
+				    
+				//$link = sportsmanagementHelperRoute::getIcalRoute($this->project->id,$this->teams[$this->ptid]->team_id,null,null);
 				$text = JHtml::_('image','administrator/components/com_sportsmanagement/assets/images/calendar.png', JText::_('COM_SPORTSMANAGEMENT_TEAMPLAN_ICAL_EXPORT'));
 				$attribs = array('title' => JText::_('COM_SPORTSMANAGEMENT_TEAMPLAN_ICAL_EXPORT'));
 				echo JHtml::_('link',$link,$text,$attribs);

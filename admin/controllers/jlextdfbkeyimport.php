@@ -1,9 +1,9 @@
 <?php
-/** SportsManagement ein Programm zur Verwaltung für Sportarten
+/** SportsManagement ein Programm zur Verwaltung fÃ¼r Sportarten
  * @version   1.0.05
  * @file      jlextdfbkeyimport.php
  * @author    diddipoeler, stony, svdoldie und donclumsy (diddipoeler@gmx.de)
- * @copyright Copyright: © 2013 Fussball in Europa http://fussballineuropa.de/ All rights reserved.
+ * @copyright Copyright: Â© 2013 Fussball in Europa http://fussballineuropa.de/ All rights reserved.
  * @license   This file is part of SportsManagement.
  * @package   sportsmanagement
  * @subpackage controllers
@@ -37,24 +37,26 @@ function __construct()
         $this->registerTask( 'save' , 'Save' );
         $this->registerTask( 'apply' , 'Apply' );
         $this->registerTask( 'insert' , 'insert' );
-        
     }
     
+
 /**
  * sportsmanagementControllerjlextdfbkeyimport::display()
  * 
+ * @param bool $cachable
+ * @param bool $urlparams
  * @return void
  */
-function display()  
+function display($cachable = false, $urlparams = false)  
 {
 
 
 //global $app,$option;
 
-$document	=& JFactory::getDocument();
-		$app	=& JFactory::getApplication();
-    $model = $this->getModel('jlextdfbkeyimport');
-    $post = JFactory::getApplication()->input->get( 'post' );
+//$document	=& JFactory::getDocument();
+//		$app	=& JFactory::getApplication();
+//    $model = $this->getModel('jlextdfbkeyimport');
+//    $post = JFactory::getApplication()->input->get( 'post' );
     
     /*
     echo '<pre>';
@@ -77,6 +79,7 @@ $document	=& JFactory::getDocument();
     $msg = JText::sprintf( 'DESCBEINGEDITTED', JText::_( 'The division' ), $projectid );
 		$this->setRedirect( 'index.php?option=' . $option., $msg );
 */
+/*    
     switch( $this->getTask() )
 		{
     
@@ -87,30 +90,53 @@ $document	=& JFactory::getDocument();
 				JFactory::getApplication()->input->setVar( 'view', 'jlextdfbkeyimport' );
 				//JFactory::getApplication()->input->setVar( 'edit', false );
 				
-				/*
- 				$model = $this->getModel ( 'round' );
-				$viewType = $document->getType();
-				$view = $this->getView( 'round', $viewType );
-				$view->setModel( $model, true );	// true is for the default model;
-
- 				$projectws = $this->getModel( 'project' );
-				$projectws->_name = 'projectws';
-				$projectws->setId( $app->getUserState( $option . 'project', 0 ) );
-				$view->setModel( $projectws );
-
-				$model = $this->getModel( 'round' );
-				$model->checkout();
-				*/
+				
 			} break;
     
     }
-    
+    */
         
     parent::display();
     
     }    
     
-  
+    /**
+     * sportsmanagementControllerjlextdfbkeyimport::getdivisionfirst()
+     * 
+     * @return void
+     */
+    function getdivisionfirst()
+    {
+    $post = JFactory::getApplication()->input->post->getArray(array());    
+    $option = JFactory::getApplication()->input->getCmd('option');    
+     $msg = JText::_( 'COM_SPORTSMANAGEMENT_ADMIN_DFBKEYS_INFO_20' );
+    $link = 'index.php?option='.$option.'&view=jlextdfbkeyimport&layout=default&divisionid='.$post['divisionid'];
+		$this->setRedirect( $link, $msg );     
+    }
+    
+  /**
+   * sportsmanagementControllerjlextdfbkeyimport::apply()
+   * 
+   * @return void
+   */
+  function apply()
+	{
+	   $option = JFactory::getApplication()->input->getCmd('option');
+       //$post = JFactory::getApplication()->input->get( 'post' );
+       $post = JFactory::getApplication()->input->post->getArray(array());
+       //JFactory::getApplication()->enqueueMessage(__METHOD__.' '.__LINE__.' post <pre>'.print_r($post,true).'</pre>', 'warning');
+
+// store the variable that we would like to keep for next time
+// function syntax is setUserState( $key, $value );
+JFactory::getApplication()->setUserState( "$option.first_post", $post );
+       
+     $msg = JText::_( 'COM_SPORTSMANAGEMENT_ADMIN_DFBKEYS_INFO_12' );
+    $link = 'index.php?option='.$option.'&view=jlextdfbkeyimport&layout=default_savematchdays';
+		$this->setRedirect( $link, $msg );  
+       
+       }
+       
+       
   /**
    * sportsmanagementControllerjlextdfbkeyimport::save()
    * 
@@ -120,14 +146,15 @@ $document	=& JFactory::getDocument();
 	{
 		$option = JFactory::getApplication()->input->getCmd('option');
 		$app = JFactory::getApplication ();
-        $post = JFactory::getApplication()->input->get( 'post' );
-
+        //$post = JFactory::getApplication()->input->get( 'post' );
+	$post = JFactory::getApplication()->input->post->getArray(array());
+//JFactory::getApplication()->enqueueMessage(__METHOD__.' '.__LINE__.' post <pre>'.print_r($post,true).'</pre>', 'warning');	
     /*
     echo '<pre>';
     print_r($post);
     echo '</pre>';
 		*/
-		//echo 'einträge -> '.count($post[roundcode]).'<br>';
+		//echo 'eintrÃ¤ge -> '.count($post[roundcode]).'<br>';
 		
     	
 		for ($i=0; $i < count($post[roundcode])  ; $i++)
@@ -202,8 +229,10 @@ $document	=& JFactory::getDocument();
 	{
 		$option = JFactory::getApplication()->input->getCmd('option');
 		$app = JFactory::getApplication ();
-        $post = JFactory::getApplication()->input->get( 'post' );
-      
+//        $post = JFactory::getApplication()->input->get( 'post' );
+$post = JFactory::getApplication()->input->post->getArray(array());
+//JFactory::getApplication()->enqueueMessage(__METHOD__.' '.__LINE__.' post <pre>'.print_r($post,true).'</pre>', 'warning');
+	  
     /*    
     echo '<pre>';
     print_r($post);
@@ -240,11 +269,11 @@ $document	=& JFactory::getDocument();
 		$app->enqueueMessage(JText::_(get_class($this).' '.__FUNCTION__.'<br><pre>'.print_r($this->_db->getErrorMsg(),true).'</pre>'),'Error');
         //$this->setError( $this->_db->getErrorMsg() );
 		//return false;
-		//echo 'nicht eingefügt <br>';
+		//echo 'nicht eingefÃ¼gt <br>';
 		}
 		else
 		{
-    //echo 'eingefügt <br>';
+    //echo 'eingefÃ¼gt <br>';
     }
 		
 		}

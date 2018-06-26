@@ -228,13 +228,13 @@ sportsmanagementModelPrediction::$roundID = $roundIDnew;
   static function getChampionPoints($champ_tipp)
   {
     // Reference global application object
-        $app = JFactory::getApplication();
-        // JInput object
-        $jinput = $app->input;
-        $option = $jinput->getCmd('option');
+    $app = JFactory::getApplication();
+    // JInput object
+    $jinput = $app->input;
+    $option = $jinput->getCmd('option');
     // Create a new query object.		
-		$db = sportsmanagementHelper::getDBConnection();
-		$query = $db->getQuery(true);
+	$db = sportsmanagementHelper::getDBConnection();
+	$query = $db->getQuery(true);
         
   $ChampPoints = 0;
   
@@ -292,7 +292,7 @@ sportsmanagementModelPrediction::$roundID = $roundIDnew;
 
   }
 				
-				
+ $db->disconnect(); // See: http://api.joomla.org/cms-3/classes/JDatabaseDriver.html#method_disconnect				
   return $ChampPoints;
   }
   
@@ -339,7 +339,7 @@ sportsmanagementModelPrediction::$roundID = $roundIDnew;
                 
 			}
 		}
-        
+$db->disconnect(); // See: http://api.joomla.org/cms-3/classes/JDatabaseDriver.html#method_disconnect        
 		return self::$_predictionGame;
 	}
 
@@ -423,38 +423,35 @@ sportsmanagementModelPrediction::$roundID = $roundIDnew;
         case 'com_cbe':
         case 'com_cbe25':
         case 'prediction':
-        if ( $db->setQuery($query) )
-        {
-		$results = $db->loadResult();
-        if ( $results )
-        {
-        $picture = $results;
-        }
-        }
-        else
-       {
-       $app->enqueueMessage(JText::_(__METHOD__.' '.__LINE__.'<br><pre>'.print_r($db->getErrorNum(),true).'</pre>'),'Error');
-       $app->enqueueMessage(JText::_(__METHOD__.' '.__LINE__.'<br><pre>'.print_r($db->getErrorMsg(),true).'</pre>'),'Error'); 
-       }
+	try {
+            $db->setQuery($query);
+            $picture = $db->loadResult();
+            $db->disconnect(); // See: http://api.joomla.org/cms-3/classes/JDatabaseDriver.html#method_disconnect
+        } catch (Exception $e) {
+            $msg = $e->getMessage(); // Returns "Normally you would have other code...
+            $code = $e->getCode(); // Returns
+            $db->disconnect(); // See: http://api.joomla.org/cms-3/classes/JDatabaseDriver.html#method_disconnect
+            JFactory::getApplication()->enqueueMessage(__METHOD__ . ' ' . __LINE__ . ' ' . $msg, 'error');
+            return false;
+        }	    
         break;  
         case 'com_kunena':
-        if ( $db->setQuery($query) )
-        {
-		$results = $db->loadResult();
-        if ( $results )
-        {
-        $picture = 'media/kunena/avatars/'.$results;
-        }
-        }
-        else
-       {
-       $app->enqueueMessage(JText::_(__METHOD__.' '.__LINE__.'<br><pre>'.print_r($db->getErrorNum(),true).'</pre>'),'Error');
-       $app->enqueueMessage(JText::_(__METHOD__.' '.__LINE__.'<br><pre>'.print_r($db->getErrorMsg(),true).'</pre>'),'Error'); 
-       }
+	try {
+            $db->setQuery($query);
+            $results = $db->loadResult();
+	$picture = 'media/kunena/avatars/'.$results;
+            $db->disconnect(); // See: http://api.joomla.org/cms-3/classes/JDatabaseDriver.html#method_disconnect
+        } catch (Exception $e) {
+            $msg = $e->getMessage(); // Returns "Normally you would have other code...
+            $code = $e->getCode(); // Returns
+            $db->disconnect(); // See: http://api.joomla.org/cms-3/classes/JDatabaseDriver.html#method_disconnect
+            JFactory::getApplication()->enqueueMessage(__METHOD__ . ' ' . __LINE__ . ' ' . $msg, 'error');
+            return false;
+        }	    
         break;
         }  
  
- 
+ $db->disconnect(); // See: http://api.joomla.org/cms-3/classes/JDatabaseDriver.html#method_disconnect
   return $picture;
   
   } 
@@ -554,7 +551,7 @@ sportsmanagementModelPrediction::$roundID = $roundIDnew;
     {
 		self::$_predictionMember->picture = self::getPredictionMemberAvatar(self::$_predictionMember->user_id, $configavatar['show_image_from'] );
 		}
-    
+$db->disconnect(); // See: http://api.joomla.org/cms-3/classes/JDatabaseDriver.html#method_disconnect    
     return self::$_predictionMember;
 	}
 
@@ -606,7 +603,7 @@ sportsmanagementModelPrediction::$roundID = $roundIDnew;
           $row->start_date = $db->loadResult();
           } 
         }
-
+$db->disconnect(); // See: http://api.joomla.org/cms-3/classes/JDatabaseDriver.html#method_disconnect
 		return self::$_predictionProjectS;
 	}
 
@@ -706,6 +703,7 @@ sportsmanagementModelPrediction::$roundID = $roundIDnew;
 							break;
 						}
 		}
+$db->disconnect(); // See: http://api.joomla.org/cms-3/classes/JDatabaseDriver.html#method_disconnect		
 		return $configvalues;
 	}
 
@@ -1328,12 +1326,12 @@ sportsmanagementModelPrediction::$roundID = $roundIDnew;
       $round_ids = $configprediction['predictionroundid'];
       }    
       
-  $roundResults = sportsmanagementModelPredictionEntry::getMatchesDataForPredictionEntry((int)$predictionGameID,
-																			(int)$ProjectID,
-																			(int)$RoundID,
-																			$joomlaUserID,
-                                                                            $match_ids,
-                                                                            $round_ids);
+$roundResults = sportsmanagementModelPredictionEntry::getMatchesDataForPredictionEntry((int)$predictionGameID,
+(int)$ProjectID,
+(int)$RoundID,
+$joomlaUserID,
+$match_ids,
+$round_ids);
                                           
   $predictionGameMemberMail = self::getPredictionMemberEMailAdress($predictionMemberID);
 
@@ -1363,6 +1361,8 @@ sportsmanagementModelPrediction::$roundID = $roundIDnew;
 
 /**
  * zur sicherheit die tipeingaben auch dem admin zusenden
+ * template: overall
+ * parameter: send_admin_user_tipentry
  */
 if ( $configprediction['send_admin_user_tipentry'] )
 {  
@@ -1371,9 +1371,9 @@ if ( $configprediction['send_admin_user_tipentry'] )
   //$mailer->addRecipient($predictionGameMemberMail);				
   $mailer->addRecipient($recipient);
 
-//$mailer->addRecipient($recipient);
-
-	//Create the mail
+/**
+ * Create the mail
+ */
 	$mailer->setSubject(JText::_('COM_SPORTSMANAGEMENT_PRED_ENTRY_MAIL_TITLE'));
   
   
@@ -1383,8 +1383,8 @@ if ( $configprediction['send_admin_user_tipentry'] )
   $body = '';
   $totalPoints = 0;
 /**
-  * jetzt die ergebnisse
-  */  
+ * jetzt die ergebnisse
+ */  
   $body .= "<html>"; 
 
 $body .= "<table class='blog' cellpadding='0' cellspacing='0' width='100%'>";
@@ -1410,7 +1410,6 @@ $body .= "</table>";
  */	
 	foreach ($roundResults AS $result)
 	{
-  //$class = ($k==0) ? 'sectiontableentry1' : 'sectiontableentry2';
   $class = '';
 
 	$resultHome = (isset($result->team1_result)) ? $result->team1_result : '-';
@@ -1430,8 +1429,12 @@ $body .= "</table>";
 						
   $body .= "<tr class='" . $class ."'>";
 	$body .= "<td class='td_c'>";
-	$body .= JHtml::date($result->match_date, 'd.m.Y H:i', false);
-	$body .= " - ";
+	$jdate = JFactory::getDate($result->match_date);
+	$jdate->setTimezone(new DateTimeZone($predictionProjectSettings->timezone));
+	$body .= $jdate->format('d.m.Y H:i'); 
+
+	//$body .= JHtml::date($result->match_date, 'd.m.Y H:i', false);
+	//$body .= " - ";
 	//$body .= JHTML::date(date("Y-m-d H:i:s",$matchTimeDate),$configprediction['time_format']); 
 	$body .= "</td>";
 
@@ -1490,7 +1493,9 @@ $body .= "<td nowrap='nowrap' class='td_l'>";
 $body .= $awayName;
 $body .= "</td>";	
 
-// spielergebnisse
+/**
+ * spielergebnisse
+ */
 $body .= "<td class='td_c'>";
 $body .= $resultHome . $configprediction['seperator'] . $resultAway;
 $body .= "</td>";
@@ -1542,13 +1547,6 @@ $homeCount = sportsmanagementModelPredictionEntry::getTippCount($ProjectID, $res
 $awayCount = sportsmanagementModelPredictionEntry::getTippCount($ProjectID, $result->id, 2);
 $drawCount = sportsmanagementModelPredictionEntry::getTippCount($ProjectID, $result->id, 0);
 
-//$app->enqueueMessage(JText::_(__METHOD__.' '.__LINE__.' predictionGameID<br><pre>'.print_r($predictionGameID,true).'</pre>'),'');
-//$app->enqueueMessage(JText::_(__METHOD__.' '.__LINE__.' result->id<br><pre>'.print_r($result->id,true).'</pre>'),'');
-//$app->enqueueMessage(JText::_(__METHOD__.' '.__LINE__.' totalCount<br><pre>'.print_r($totalCount,true).'</pre>'),'');
-//$app->enqueueMessage(JText::_(__METHOD__.' '.__LINE__.' homeCount<br><pre>'.print_r($homeCount,true).'</pre>'),'');
-//$app->enqueueMessage(JText::_(__METHOD__.' '.__LINE__.' awayCount<br><pre>'.print_r($awayCount,true).'</pre>'),'');
-//$app->enqueueMessage(JText::_(__METHOD__.' '.__LINE__.' drawCount<br><pre>'.print_r($drawCount,true).'</pre>'),'');
-
 if ($totalCount > 0)
 {
 $percentageH = round(( $homeCount * 100 / $totalCount ),2);
@@ -1597,8 +1595,15 @@ $body .= sportsmanagementModelPredictionEntry::createHelptText($predictionProjec
   }
   
 	$mailer->setBody($body);
-  
-  //Sending the mail
+
+if ( $configprediction['admin_debug'] )
+{
+$app->enqueueMessage(JText::_(__METHOD__.' '.__LINE__.' mailer<br><pre>'.print_r($mailer,true).'</pre>'),'');        
+}        
+
+/**
+ * Sending the mail
+ */
 	$send =  $mailer->Send();
 	if ($send !== true)
 	{
@@ -1611,7 +1616,7 @@ $body .= sportsmanagementModelPredictionEntry::createHelptText($predictionProjec
 	{
 	//echo 'Mail sent';
 	$emailadresses = implode(",",$predictionGameMemberMail);
-	$app->enqueueMessage(JText::sprintf('COM_SPORTSMANAGEMENT_PRED_ENTRY_MAIL_SEND_OK',$emailadresses),'');
+	$app->enqueueMessage(JText::sprintf('COM_SPORTSMANAGEMENT_PRED_ENTRY_MAIL_SEND_OK',$emailadresses),'notice');
 	}
                           				
   }
@@ -1846,7 +1851,7 @@ $body .= sportsmanagementModelPredictionEntry::createHelptText($predictionProjec
         $query->where('user_id = '.(int)$user_id);
 
 		$db->setQuery($query);
-		$results=$db->loadResult();
+		$results = $db->loadResult();
 		return $results;
 	}
 
@@ -2660,28 +2665,24 @@ $query->where('pm.group_id = '.(int)self::$pggroup);
 }
 
         $query->order('pm.id ASC');
-        
-        if ( $db->setQuery($query) )
-        {
-        //$app->enqueueMessage(JText::_(__METHOD__.' '.__LINE__.' dump<br><pre>'.print_r($query->dump(),true).'</pre>'),'');
-        
-		$results = $db->loadObjectList();
-        }
-        else
-       {
-       $app->enqueueMessage(JText::_(__METHOD__.' '.__LINE__.'<br><pre>'.print_r($db->getErrorNum(),true).'</pre>'),'Error');
-       $app->enqueueMessage(JText::_(__METHOD__.' '.__LINE__.'<br><pre>'.print_r($db->getErrorMsg(),true).'</pre>'),'Error'); 
-       }
 		
         if ( $total )
         {
-        
         return $query;
-            
         }
         else
         {
-        
+        try {
+            $db->setQuery($query);
+            $results = $db->loadObjectList();
+            $db->disconnect(); // See: http://api.joomla.org/cms-3/classes/JDatabaseDriver.html#method_disconnect
+        } catch (Exception $e) {
+            $msg = $e->getMessage(); // Returns "Normally you would have other code...
+            $code = $e->getCode(); // Returns
+            $db->disconnect(); // See: http://api.joomla.org/cms-3/classes/JDatabaseDriver.html#method_disconnect
+            JFactory::getApplication()->enqueueMessage(__METHOD__ . ' ' . __LINE__ . ' ' . $msg, 'error');
+            return false;
+        }
 		foreach ( $results as $row )
 		{
     $picture = self::getPredictionMemberAvatar($row->user_id, $configavatar['show_image_from']  );

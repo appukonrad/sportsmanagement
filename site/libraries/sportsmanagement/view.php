@@ -10,7 +10,7 @@
  * @subpackage libraries
  */
 defined('_JEXEC') or die();
-
+jimport( 'joomla.application.component.view');
 $document = JFactory::getDocument();
 
 $params_com = JComponentHelper::getParams( 'com_sportsmanagement' );
@@ -24,15 +24,15 @@ $addfontawesome	= $params_com->get( 'add_fontawesome' );
 if (version_compare(JVERSION, '3.0.0', 'ge')) {
 //JHtml::_('jquery.framework');
     if($cssflags){
-    $stylelink = '<link rel="stylesheet" href="' . JURI::root() . 'administrator/components/com_sportsmanagement/libraries/flag-icon/css/flag-icon.css' . '" type="text/css" />' . "\n";
+    $stylelink = '<link rel="stylesheet" href="' . JURI::root() . 'components/com_sportsmanagement/libraries/flag-icon/css/flag-icon.css' . '" type="text/css" />' . "\n";
     $document->addCustomTag($stylelink);
     }
     if($jsmflex){
-    $stylelink = '<link rel="stylesheet" href="' . JURI::root() . 'administrator/components/com_sportsmanagement/assets/css/flex.css' . '" type="text/css" />' . "\n";
+    $stylelink = '<link rel="stylesheet" href="' . JURI::root() . 'components/com_sportsmanagement/assets/css/flex.css' . '" type="text/css" />' . "\n";
     $document->addCustomTag($stylelink);
     }
     if($jsmgrid){
-    $stylelink = '<link rel="stylesheet" href="' . JURI::root() . 'administrator/components/com_sportsmanagement/assets/css/grid.css' . '" type="text/css" />' . "\n";
+    $stylelink = '<link rel="stylesheet" href="' . JURI::root() . 'components/com_sportsmanagement/assets/css/grid.css' . '" type="text/css" />' . "\n";
     $document->addCustomTag($stylelink);
     }
     if($usefontawesome){
@@ -40,7 +40,7 @@ if (version_compare(JVERSION, '3.0.0', 'ge')) {
     $document->addCustomTag($stylelink);
     }
     if($addfontawesome){
-    $stylelink = '<link rel="stylesheet" href="' . JURI::root() . 'administrator/components/com_sportsmanagement/libraries/fontawesome/css/font-awesome.min.css' . '" type="text/css" />' . "\n";
+    $stylelink = '<link rel="stylesheet" href="' . JURI::root() . 'components/com_sportsmanagement/libraries/fontawesome/css/font-awesome.min.css' . '" type="text/css" />' . "\n";
     $document->addCustomTag($stylelink);
     }
 } elseif (version_compare(JVERSION, '2.5.0', 'ge')) {
@@ -106,13 +106,16 @@ class sportsmanagementView extends JViewLegacy {
         $this->option = $this->jinput->getCmd('option');
         $this->user = JFactory::getUser();
         $this->view = $this->jinput->getVar("view");
-        
+        $this->cfg_which_database = $this->jinput->getVar('cfg_which_database','0');
         $this->backbuttonreferer = $_SERVER['HTTP_REFERER'];
 
         $this->model = $this->getModel();
         $headData = $this->document->getHeadData();
         $scripts = $headData['scripts'];
         $this->document->addStyleSheet(JURI::base().'components/'.$this->option.'/assets/css/modalwithoutjs.css');
+        
+        $this->document->addStyleSheet(JURI::base().'components/'.$this->option.'/assets/css/jcemediabox.css');
+		$this->document->addScript(JURI::root(true) . '/components/'.$this->option.'/assets/js/jcemediabox.js');
 //$this->app->enqueueMessage(JText::_(__METHOD__.' '.__LINE__.' picture server <br><pre>'.print_r($scripts,true).'</pre>'),'');
 
         /**
@@ -127,6 +130,9 @@ class sportsmanagementView extends JViewLegacy {
         $this->document->setHeadData($headData);
 
         switch ($this->view) {
+	case 'ical':
+                $this->project = sportsmanagementModelProject::getProject(sportsmanagementModelProject::$cfg_which_database);
+		break;
             case 'resultsranking':
                 $this->project = sportsmanagementModelProject::getProject(sportsmanagementModelProject::$cfg_which_database);
                 $this->overallconfig = sportsmanagementModelProject::getOverallConfig(sportsmanagementModelProject::$cfg_which_database);

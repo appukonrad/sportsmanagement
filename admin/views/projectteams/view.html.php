@@ -114,9 +114,9 @@ class sportsmanagementViewprojectteams extends sportsmanagementView
 			}
 
 			$lists['project_teams'] = JHtmlSelect::genericlist($project_teamslist, 'project_teamslist[]', 
-																' style="width:250px; height:300px;" class="inputbox" multiple="true" size="'.min(30, count($ress)).'"', 
-																'value', 
-																'text');
+					' style="width:250px; height:300px;" class="inputbox" multiple="true" size="'.min(30, count($ress)).'"', 
+					'value', 
+					'text');
 		}
 		else
 		{
@@ -164,17 +164,18 @@ class sportsmanagementViewprojectteams extends sportsmanagementView
 		}
 		else
 		{
-			JError::raiseWarning('ERROR_CODE','<br />'.JText::_('COM_SPORTSMANAGEMENT_ADMIN_PROJECTTEAMS_ADD_TEAM').'<br /><br />');
+		//JError::raiseWarning('ERROR_CODE','<br />'.JText::_('COM_SPORTSMANAGEMENT_ADMIN_PROJECTTEAMS_ADD_TEAM').'<br /><br />');
+		$this->app->enqueueMessage(JText::_('COM_SPORTSMANAGEMENT_ADMIN_PROJECTTEAMS_ADD_TEAM'),'Notice');
 		}
 
 		//build the html select list for teams
 		if (count($notusedteams) > 0)
 		{
 			$lists['teams'] = JHtmlSelect::genericlist( $notusedteams, 
-														'teamslist[]', 
-														' style="width:250px; height:300px;" class="inputbox" multiple="true" size="'.min(30, count($notusedteams)).'"', 
-														'value', 
-														'text');
+				'teamslist[]', 
+				' style="width:250px; height:300px;" class="inputbox" multiple="true" size="'.min(30, count($notusedteams)).'"', 
+				'value', 
+				'text');
 		}
 		else
 		{
@@ -195,11 +196,11 @@ class sportsmanagementViewprojectteams extends sportsmanagementView
 		
 		$lists['nation'] = $nation;
 		$lists['nationpt'] = JHtmlSelect::genericlist(	$nation,
-																'filter_search_nation',
-																'class="inputbox" style="width:140px; " onchange="this.form.submit();"',
-																'value',
-																'text',
-																$this->state->get('filter.search_nation'));
+				'filter_search_nation',
+				'class="inputbox" style="width:140px; " onchange="this.form.submit();"',
+				'value',
+				'text',
+				$this->state->get('filter.search_nation'));
         
         if ( JComponentHelper::getParams($this->option)->get('show_option_projectteams_quickadd',0) )
         {

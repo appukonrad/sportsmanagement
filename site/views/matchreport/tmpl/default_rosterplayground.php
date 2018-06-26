@@ -185,7 +185,15 @@ if ( $schemahome )
 
 <?PHP
 //echo JHtml::image($this->team1_club->logo_big, $this->team1_club->name, array('title' => $this->team1_club->name,'class' => "img-rounded" )); 
-echo sportsmanagementHelperHtml::getBootstrapModalImage('rosterplaygroundteamhome',$this->team1_club->logo_big,$this->team1_club->name,'50');     
+echo sportsmanagementHelperHtml::getBootstrapModalImage('rosterplaygroundteamhome',
+$this->team1_club->logo_big,
+$this->team1_club->name,
+'50',
+'',
+$this->modalwidth,
+$this->modalheight,
+$this->overallconfig['use_jquery_modal']
+);     
 ?>
 
 
@@ -202,7 +210,15 @@ if ( $schemaguest )
 
 <?PHP
 //echo JHtml::image($this->team2_club->logo_big, $this->team2_club->name, array('title' => $this->team2_club->name,'class' => "img-rounded" ));    
-echo sportsmanagementHelperHtml::getBootstrapModalImage('rosterplaygroundteamaway',$this->team2_club->logo_big,$this->team2_club->name,'50');  
+echo sportsmanagementHelperHtml::getBootstrapModalImage('rosterplaygroundteamaway',
+$this->team2_club->logo_big,
+$this->team2_club->name,
+'50',
+'',
+$this->modalwidth,
+$this->modalheight,
+$this->overallconfig['use_jquery_modal']						       
+);  
 ?>
 
 
@@ -242,7 +258,7 @@ if ( $player->pposid == $pos->pposid && $player->ptid == $this->match->projectte
 // player->ppic = person picture
 // player->picture = teamplay picture
 $picture2 = sportsmanagementHelper::getDefaultPlaceholder("player");
-$picture = ($player->ppic != $picture2) ? $player->ppic : $player->picture ;
+$picture = ($player->picture != $picture2) ? $player->picture : $player->ppic ;
 
 if ( COM_SPORTSMANAGEMENT_SHOW_DEBUG_INFO )
 {
@@ -262,7 +278,15 @@ echo 'this->heim picture<br /> ~' . $picture . ' ~<br />';
 
 
 <?PHP
-echo sportsmanagementHelperHtml::getBootstrapModalImage('rosterplaygroundperson'.$player->person_id,$picture,$player->lastname,$this->config['roster_playground_player_picture_width']);     
+echo sportsmanagementHelperHtml::getBootstrapModalImage('rosterplaygroundperson'.$player->person_id,
+$picture,
+$player->lastname,
+$this->config['roster_playground_player_picture_width'],
+'',
+$this->modalwidth,
+$this->modalheight,
+$this->overallconfig['use_jquery_modal']						       
+);     
 ?>
  
 
@@ -312,7 +336,7 @@ if ( $player->pposid == $pos->pposid && $player->ptid == $this->match->projectte
 // player->ppic = person picture
 // player->picture = teamplay picture
 $picture2 = sportsmanagementHelper::getDefaultPlaceholder("player");
-$picture = ($player->ppic != $picture2) ? $player->ppic : $player->picture ;
+$picture = ($player->picture != $picture2) ? $player->picture : $player->ppic ;
 
 ?>
 
@@ -320,7 +344,15 @@ $picture = ($player->ppic != $picture2) ? $player->ppic : $player->picture ;
 
 <?PHP
 //echo JHtml::image($picture, $player->lastname, array('title' => $player->lastname,'class' => "img-rounded" ));  
-echo sportsmanagementHelperHtml::getBootstrapModalImage('rosterplaygroundperson'.$player->person_id,$picture,$player->lastname,$this->config['roster_playground_player_picture_width']);    
+echo sportsmanagementHelperHtml::getBootstrapModalImage('rosterplaygroundperson'.$player->person_id,
+$picture,
+$player->lastname,
+$this->config['roster_playground_player_picture_width'],
+'',
+$this->modalwidth,
+$this->modalheight,
+$this->overallconfig['use_jquery_modal']						       
+);    
 ?>
 
 <a class="link" href=""><font color="white"><?PHP echo $player->lastname." "; ?></font></a>

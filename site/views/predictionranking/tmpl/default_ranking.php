@@ -1,9 +1,9 @@
 <?php 
-/** SportsManagement ein Programm zur Verwaltung für alle Sportarten
+/** SportsManagement ein Programm zur Verwaltung fÃ¼r alle Sportarten
  * @version   1.0.05
  * @file      default_ranking.php
  * @author    diddipoeler, stony, svdoldie und donclumsy (diddipoeler@gmx.de)
- * @copyright Copyright: © 2013 Fussball in Europa http://fussballineuropa.de/ All rights reserved.
+ * @copyright Copyright: Â© 2013 Fussball in Europa http://fussballineuropa.de/ All rights reserved.
  * @license   This file is part of SportsManagement.
  * @package   sportsmanagement
  * @subpackage predictionranking
@@ -34,7 +34,6 @@ echo 'this->limitend<br /><pre>~' . print_r($this->limitend,true) . '~</pre><br 
 } 
 </style>
 
-<!-- <a name='jl_top' id='jl_top'></a> -->
 <?php
 foreach (sportsmanagementModelPrediction::$_predictionProjectS AS $predictionProject)
 {
@@ -165,11 +164,18 @@ When viewing on anything larger than 768px wide, you will not see any difference
 					</tr>
 
 <tfoot>
-<div class="pred_ranking">
-<?php 
-echo $this->pagination->getListFooter(); 
-?>
+<div class="pagination">
+    <p class="counter">
+        <?php echo $this->pagination->getPagesCounter(); ?>
+    </p>
+    <p class="counter">
+        <?php echo $this->pagination->getResultsCounter(); ?>
+    </p>
+    <?php echo $this->pagination->getPagesLinks(); ?>
 </div>
+<?php
+//echo $this->pagination->getLimitBox();
+?>
 </tfoot>                    
                     
 				</table>
@@ -338,7 +344,7 @@ echo '<br />memberPredictionPoints<pre>~' . print_r($memberPredictionPoints,true
                                 {
                                     case 0:
                                     // normale spielzeit wird benutzt 
-                                    // wenn aber die verlängerung oder das elfmeterergebnis eingetragen wurde,
+                                    // wenn aber die verlÃ¤ngerung oder das elfmeterergebnis eingetragen wurde,
                                     // dann den endstand der regulaeren spielzeit nehmen.
                                     if ( !is_null($memberPredictionPoint->homeResultOT) || !is_null($memberPredictionPoint->awayResultOT) || 
                                     !is_null($memberPredictionPoint->homeResultSO) || !is_null($memberPredictionPoint->awayResultSO)
@@ -452,7 +458,7 @@ echo '<br />memberPredictionPoints<pre>~' . print_r($memberPredictionPoints,true
                         {
                             $groupmembersResultsArray[$member->pg_group_id]['totalJoker'] = 0;
                         }
-                    // für die gruppentabelle
+                    // fÃ¼r die gruppentabelle
                     $groupmembersResultsArray[$member->pg_group_id]['pg_group_id'] = $member->pg_group_id;
                     $groupmembersResultsArray[$member->pg_group_id]['pg_group_name'] = $member->pg_group_name;
                     $groupmembersResultsArray[$member->pg_group_id]['rank'] = 0;
@@ -584,10 +590,14 @@ echo '<br />memberPredictionPoints<pre>~' . print_r($memberPredictionPoints,true
 ?>
 <tbody>
 <?PHP
-				// schleife über die sortierte tabelle anfang
-                foreach ($computedMembersRanking AS $key => $value)
-				{
-				
+/**
+ * schleife Ã¼ber die sortierte tabelle anfang
+ */		
+$durchlauf = 1; 
+foreach ($computedMembersRanking AS $key => $value)
+{
+			if (in_array($durchlauf, range($this->ausgabestart, $this->ausgabeende)))	
+				{				
 				foreach ( $this->items as $items )
 				{
 				//if ( $key == $items->pmID )
@@ -746,14 +756,17 @@ echo '<br />memberPredictionPoints<pre>~' . print_r($memberPredictionPoints,true
 						$i++;
 					  }
           }
-          
-				}
-                // schleife über die sortierte tabelle ende
-			?>
-            </tbody>
-		</table>
-        </div>
-		<?php
 	}
+$durchlauf++;          
+				}
+/**
+ * schleife Ã¼ber die sortierte tabelle ende
+ */
+?>
+</tbody>
+</table>
+</div>
+<?php
+}
 }
 ?>

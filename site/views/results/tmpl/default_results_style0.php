@@ -10,6 +10,7 @@
  */
 
 defined( '_JEXEC' ) or die( 'Restricted access' );
+use Joomla\Registry\Registry;
 ?>
 <style>
 #sbox-window {
@@ -30,7 +31,7 @@ function example_alertBox( boxText )
 </script>
 
 <?php
-$nbcols	= 7;
+$nbcols	= 6;
 $nbcols_header = 0;
 $dates = sportsmanagementViewResults::sortByDate($this->matches);
 
@@ -44,12 +45,11 @@ if($this->config['show_referee']){$nbcols++;}
 if($this->config['result_style']==2){$nbcols++;}
 if($this->config['show_attendance_column']){$nbcols++; $nbcols_header++;}
 
-if ($this->config['show_comments_count'] > 0)
+if ( $this->config['show_comments_count'] )
 {
 
 if(!JComponentHelper::isEnabled('com_jcomments', true))
 {
-    //JError::raiseError('Komponentenfehler', JText::_('Die Komponente JComments ist nicht installiert'));
     $comJcomments = false;
     JError::raiseWarning('Komponentenfehler', JText::_('Die Komponente JComments ist nicht installiert'));
 }
@@ -59,22 +59,34 @@ else
     $nbcols++;
 	$nbcols_header++;
 
-	require_once (JPATH_ROOT . '/components/com_jcomments/jcomments.class.php');
-    require_once (JPATH_ROOT . '/components/com_jcomments/jcomments.config.php');
-	require_once (JPATH_ROOT . '/components/com_jcomments/models/jcomments.php');
+$dispatcher = JDispatcher::getInstance();
+$comments = '';
+if(file_exists(JPATH_ROOT.'/components/com_jcomments/classes/config.php'))
+		{
+			require_once JPATH_ROOT.'/components/com_jcomments/classes/config.php';
+			require_once JPATH_ROOT.'/components/com_jcomments/jcomments.class.php';
+			require_once JPATH_ROOT.'/components/com_jcomments/models/jcomments.php';
+		}
 
-	// get joomleague comments plugin params
-	JPluginHelper::importPlugin( 'joomleague' );
+/**
+ * load sportsmanagement comments plugin files
+ */
+		JPluginHelper::importPlugin('content','sportsmanagement_comments');
 
-	$plugin	= & JPluginHelper::getPlugin('joomleague', 'comments');
+/**
+ * get sportsmanagement comments plugin params
+ */
+		$plugin = JPluginHelper::getPlugin('content', 'sportsmanagement_comments');
 
 	if (is_object($plugin)) {
-		$pluginParams = new JParameter($plugin->params);
+		$pluginParams = new Registry($plugin->params);
 	}
 	else {
-		$pluginParams = new JParameter('');
+		$pluginParams = new Registry('');
 	}
 	$separate_comments 	= $pluginParams->get( 'separate_comments', 0 );
+
+	
     }
 }
 ?>
@@ -96,7 +108,6 @@ else
 			?>
 			<th colspan="<?php echo $nbcols-$nbcols_header; ?>">
             <?php 
-            //echo JHtml::date( $date, JText::_('COM_SPORTSMANAGEMENT_RESULTS_GAMES_DATE_MONTH'));
             if ( !$timestamp )
     {
         echo '';
@@ -153,9 +164,6 @@ else
 
 	foreach( $games as $game )
 	{
-		
-        //echo 'game <pre>'.print_r($game, true).'</pre><br>';
-        
         $this->game = $game;
 		if ($game->published)
 		{
@@ -227,7 +235,6 @@ $report_link = sportsmanagementHelperRoute::getSportsmanagementRoute('nextmatch'
 			}
 			?>
 
-	<!--<tr class="result<?php // echo ($k == 0) ? '' : ' alt'; ?><?php //echo ($hasEvents ? ' hasevents':''); ?>">-->
 	<tr	class=""<?php echo $favStyle; ?>>
 		<?php
 		if ($this->config['show_match_number'])
@@ -327,7 +334,6 @@ $this->overallconfig['use_jquery_modal']);
 		<?php
 		}
 //--------------------------------------------------------------------------------------------------------------
-		//$this->config['result_style']=2;
 		if ($this->config['result_style']==0)
 		{
 	
@@ -540,20 +546,20 @@ $this->overallconfig['use_jquery_modal']); ?>
 				// Comments integration trigger when separate_comments in plugin is set to yes/1
 				if (isset($game->team1_result))
 				{
-					$joomleage_comments_object_group = 'com_sportsmanagement_matchreport';
+					$sportsmanagement_comments_object_group = 'com_sportsmanagement_matchreport';
 				}
 				else {
-					$joomleage_comments_object_group = 'com_sportsmanagement_nextmatch';
+					$sportsmanagement_comments_object_group = 'com_sportsmanagement_nextmatch';
 				}
 			}
 			else {
 				// Comments integration trigger when separate_comments in plugin is set to no/0
-				$joomleage_comments_object_group = 'com_sportsmanagement';
+				$sportsmanagement_comments_object_group = 'com_sportsmanagement';
 			}
 
 			$options 					= array();
 			$options['object_id']		= (int) $game->id;
-			$options['object_group']	= $joomleage_comments_object_group;
+			$options['object_group']	= $sportsmanagement_comments_object_group;
 			$options['published']		= 1;
 
 			$count = JCommentsModel::getCommentsCount($options);
@@ -582,7 +588,12 @@ $link = sportsmanagementHelperRoute::getSportsmanagementRoute('matchreport',$rou
 				}
 				else
 				{
-					$link = sportsmanagementHelperRoute::getNextMatchRoute($this->project->slug, $game->slug,JFactory::getApplication()->input->getInt('cfg_which_database',0)).'#comments';
+$routeparameter = array();
+$routeparameter['cfg_which_database'] = JFactory::getApplication()->input->getInt('cfg_which_database',0);
+$routeparameter['s'] = JFactory::getApplication()->input->getInt('s',0);
+$routeparameter['p'] = $this->project->slug;
+$routeparameter['mid'] = $game->slug;
+$link = sportsmanagementHelperRoute::getSportsmanagementRoute('nextmatch',$routeparameter);
 				}
 				$viewComment = JHtml::link($link, $href_text);
 				echo $viewComment;
@@ -611,7 +622,12 @@ $link = sportsmanagementHelperRoute::getSportsmanagementRoute('matchreport',$rou
 				}
 				else
 				{
-					$link = sportsmanagementHelperRoute::getNextMatchRoute($this->project->slug, $game->slug,JFactory::getApplication()->input->getInt('cfg_which_database',0)).'#comments';
+$routeparameter = array();
+$routeparameter['cfg_which_database'] = JFactory::getApplication()->input->getInt('cfg_which_database',0);
+$routeparameter['s'] = JFactory::getApplication()->input->getInt('s',0);
+$routeparameter['p'] = $this->project->slug;
+$routeparameter['mid'] = $game->slug;
+$link = sportsmanagementHelperRoute::getSportsmanagementRoute('nextmatch',$routeparameter);
 				}
 				$viewComment = JHtml::link($link, $href_text);
 				echo $viewComment;
@@ -637,7 +653,12 @@ $link = sportsmanagementHelperRoute::getSportsmanagementRoute('matchreport',$rou
 				}
 				else
 				{
-					$link = sportsmanagementHelperRoute::getNextMatchRoute($this->project->slug, $game->slug,JFactory::getApplication()->input->getInt('cfg_which_database',0)).'#comments';
+$routeparameter = array();
+$routeparameter['cfg_which_database'] = JFactory::getApplication()->input->getInt('cfg_which_database',0);
+$routeparameter['s'] = JFactory::getApplication()->input->getInt('s',0);
+$routeparameter['p'] = $this->project->slug;
+$routeparameter['mid'] = $game->slug;
+$link = sportsmanagementHelperRoute::getSportsmanagementRoute('nextmatch',$routeparameter);					
 				}
 				$viewComment = JHtml::link($link, $href_text);
 				echo $viewComment;

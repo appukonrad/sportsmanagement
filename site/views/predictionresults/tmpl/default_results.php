@@ -35,7 +35,7 @@ echo 'this->limitend<br /><pre>~' . print_r($this->limitend,true) . '~</pre><br 
 } 
 </style>
 
-<!-- <a name='jl_top' id='jl_top'></a> -->
+
 <?php
 foreach (sportsmanagementModelPrediction::$_predictionProjectS AS $predictionProject)
 {
@@ -135,11 +135,16 @@ $link = sportsmanagementHelperRoute::getSportsmanagementRoute('results',$routepa
 				</tr>
 
 <tfoot>
-<div class="pred_ranking">
-<?php 
-echo $this->pagination->getListFooter(); 
-?>
+<div class="pagination">
+    <p class="counter">
+        <?php echo $this->pagination->getPagesCounter(); ?>
+    </p>
+    <p class="counter">
+        <?php echo $this->pagination->getResultsCounter(); ?>
+    </p>
+    <?php echo $this->pagination->getPagesLinks(); ?>
 </div>
+	
 </tfoot>  
                 
 			</table>
@@ -542,10 +547,11 @@ echo '<br />membersMatchesArray<pre>~' . print_r($membersMatchesArray,true) . '~
 ?>
 <tbody>
 <?PHP
+$durchlauf = 1; 
 			foreach ($computedMembersRanking AS $key => $value)
 			{
-				if ($i <= $skipMemberCount) { $i++; continue; }
-
+				if (in_array($durchlauf, range($this->ausgabestart, $this->ausgabeende)))
+					{
 				//$class = ($k==0) ? 'sectiontableentry1' : 'sectiontableentry2';
                 // änderung bluesunny62
 				//$styleStr = ($this->predictionMember->pmID==$key) ? ' style="background-color:yellow; color:black; " ' : '';
@@ -618,7 +624,8 @@ echo '<br />membersMatchesArray<pre>~' . print_r($membersMatchesArray,true) . '~
 					$k = (1-$k);
 					$i++;
 					//if ($i > $skipMemberCount+$this->config['limit']){break;}
-				//}
+				}
+				$durchlauf++;
 			}
 			?>
             </tbody>

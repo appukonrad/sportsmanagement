@@ -364,6 +364,7 @@ try{
 		if ($getplayground)
 		{
             $query->select('playground.name AS playground_name,playground.short_name AS playground_short_name');
+	$query->select('CONCAT_WS( \':\', playground.id, playground.alias ) AS playground_slug');	
             $query->join('LEFT',' #__sportsmanagement_playground AS playground ON playground.id = m.playground_id ');
 		}
 		
@@ -478,7 +479,7 @@ try{
 	 * @param mixed $projekt
 	 * @return
 	 */
-	function _getRefereesByMatch($matches,$projekt)
+	public static function _getRefereesByMatch($matches,$projekt)
 	{
 	   	$option = JFactory::getApplication()->input->getCmd('option');
 	   $app = JFactory::getApplication();

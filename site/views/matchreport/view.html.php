@@ -11,8 +11,7 @@
 
 defined('_JEXEC') or die('Restricted access');
 
-jimport('joomla.application.component.view');
-jimport('joomla.html.pane');
+//jimport('joomla.html.pane');
 
 require_once(JPATH_COMPONENT_SITE.DS.'models'.DS.'player.php');
 
@@ -42,7 +41,7 @@ class sportsmanagementViewMatchReport extends sportsmanagementView
         $this->document->addStyleSheet($css);
         $this->document->addScript( JURI::base(true).'/components/com_sportsmanagement/assets/js/tooltipscript.js');
 
-        $this->model->checkMatchPlayerProjectPositionID();
+        //$this->model->checkMatchPlayerProjectPositionID();
         $this->model->matchid = $this->jinput->getInt('mid',0);
         sportsmanagementModelProject::setProjectID($this->jinput->getInt('p',0));
         $project = sportsmanagementModelProject::getProject(sportsmanagementModelProject::$cfg_which_database);
@@ -53,11 +52,11 @@ class sportsmanagementViewMatchReport extends sportsmanagementView
         
         $this->matchsingle = $matchsingle;
         
-		if ( $ret = sportsmanagementModelMatch::getMatchText($match->new_match_id) )
+		if ( $ret = sportsmanagementModelMatch::getMatchText($match->new_match_id,sportsmanagementModelProject::$cfg_which_database) )
         {
 		$this->newmatchtext = $ret->text;
         }
-		if ( $ret = sportsmanagementModelMatch::getMatchText($match->old_match_id) )
+		if ( $ret = sportsmanagementModelMatch::getMatchText($match->old_match_id,sportsmanagementModelProject::$cfg_which_database) )
         {
 		$this->oldmatchtext = $ret->text;
         }

@@ -447,14 +447,21 @@ $modaltext .= '</a>';
                 // select some fields
                 $query->select('*');
                 // from table
-                $query->from('#__' . COM_SPORTSMANAGEMENT_TABLE . '_club');
+                $query->from('#__sportsmanagement_club');
                 // where
                 $query->where('id = ' . self::$teams[$game->projectteam1_id]->club_id);
-                $db->setQuery($query);
+                try{
+		    $db->setQuery($query);
                 $cinfo = $db->loadObject();
 
                 $game->playground_id = $cinfo->standard_playground;
                 self::$teams[$game->projectteam1_id]->standard_playground = $cinfo->standard_playground;
+		}
+catch (Exception $e)
+{
+    JFactory::getApplication()->enqueueMessage(JText::_(__METHOD__.' '.__LINE__.' '.$e->getMessage()), 'error');
+}
+		    
             }
 
             if (!$config['show_playground'] && $config['show_playground_alert']) {
@@ -484,12 +491,17 @@ $modaltext .= '</a>';
             // select some fields
             $query->select('*');
             // from table
-            $query->from('#__' . COM_SPORTSMANAGEMENT_TABLE . '_playground');
+            $query->from('#__sportsmanagement_playground');
             // where
             $query->where('id = ' . $game->playground_id);
+		try{
             $db->setQuery($query);
             $pginfo = $db->loadObject();
-
+}
+catch (Exception $e)
+{
+    JFactory::getApplication()->enqueueMessage(JText::_(__METHOD__.' '.__LINE__.' '.$e->getMessage()), 'error');
+}
             if ($pginfo) {
                 $toolTipText .= $pginfo->name . '&lt;br /&gt;';
                 $toolTipText .= $pginfo->address . '&lt;br /&gt;';

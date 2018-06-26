@@ -1,9 +1,9 @@
 <?php 
-/** SportsManagement ein Programm zur Verwaltung für alle Sportarten
+/** SportsManagement ein Programm zur Verwaltung fÃ¼r alle Sportarten
  * @version   1.0.05
  * @file      nextmatch.php
  * @author    diddipoeler, stony, svdoldie und donclumsy (diddipoeler@gmx.de)
- * @copyright Copyright: © 2013 Fussball in Europa http://fussballineuropa.de/ All rights reserved.
+ * @copyright Copyright: Â© 2013 Fussball in Europa http://fussballineuropa.de/ All rights reserved.
  * @license   This file is part of SportsManagement.
  * @package   sportsmanagement
  * @subpackage nextmatch
@@ -137,6 +137,7 @@ class sportsmanagementModelNextMatch extends JModelLegacy
 				self::$matchid = $this->_match->id;
 			}
 		}
+		$db->disconnect(); // See: http://api.joomla.org/cms-3/classes/JDatabaseDriver.html#method_disconnect
 		return $this->_match;
 	}
 
@@ -175,6 +176,7 @@ class sportsmanagementModelNextMatch extends JModelLegacy
         }
         			
 		}
+		$db->disconnect(); // See: http://api.joomla.org/cms-3/classes/JDatabaseDriver.html#method_disconnect
 		return $this->_match;
 	}
 	
@@ -232,7 +234,7 @@ class sportsmanagementModelNextMatch extends JModelLegacy
 		$match = self::getMatch();
         
         // Select some fields
-		$query->select('p.firstname, p.nickname, p.lastname, p.country, p.id as person_id');
+	$query->select('p.firstname, p.nickname, p.lastname, p.country, p.id as person_id');
         $query->select('pos.name AS position_name');
         $query->from('#__sportsmanagement_match_referee AS mr  ');
         $query->join('INNER','#__sportsmanagement_project_referee AS pref ON mr.project_referee_id = pref.id  ');
@@ -320,7 +322,7 @@ class sportsmanagementModelNextMatch extends JModelLegacy
 	   $query = $db->getQuery(true);
        
         // Select some fields
-		$query->select('m.id AS mid,m.team1_result AS homegoals,m.team2_result AS awaygoals');
+	$query->select('m.id AS mid,m.team1_result AS homegoals,m.team2_result AS awaygoals');
         $query->select('t1.name AS hometeam');
         $query->select('t2.name AS awayteam');
         $query->select('pt1.project_id AS pid');
@@ -568,7 +570,7 @@ class sportsmanagementModelNextMatch extends JModelLegacy
   
 		$db->setQuery( $query );
 		$result = $db->loadObjectList();
-
+        $db->disconnect(); // See: http://api.joomla.org/cms-3/classes/JDatabaseDriver.html#method_disconnect
 		return $result;
 	}
 
@@ -630,21 +632,23 @@ class sportsmanagementModelNextMatch extends JModelLegacy
         }
         
         $query->where('pt.id IN ('.$listTeamId.')' );
-                 
+        try{         
 		$db->setQuery( $query );
 		$result = $db->loadObjectList();
-        
-        if ( !$result )
-	    {
-		$app->enqueueMessage(JText::_(__METHOD__.' '.__LINE__.' '.'<pre>'.print_r($db->getErrorNum(),true).'</pre>' ),'Error');
-        $app->enqueueMessage(JText::_(__METHOD__.' '.__LINE__.' '.'<pre>'.print_r($db->getErrorMsg(),true).'</pre>' ),'Error');
-	    }
-
 		foreach ( $result as $r )
 		{
 			$teams[$r->ptid] = $r;
 		}
-
+        }
+catch (Exception $e)
+{
+    $app->enqueueMessage(JText::_(__METHOD__.' '.__LINE__.' '.$e->getMessage()), 'error');
+    $teams = false;
+}
+        
+        
+        
+        $db->disconnect(); // See: http://api.joomla.org/cms-3/classes/JDatabaseDriver.html#method_disconnect
 		return $teams;
 	}
 
@@ -779,21 +783,21 @@ class sportsmanagementModelNextMatch extends JModelLegacy
         $query->where('(m.projectteam1_id = '.$ptid.' OR m.projectteam2_id = '.$ptid.')');
         $query->where('m.published = 1');
         $query->order('r.roundcode DESC');
-        //$query->setLimit('0,'.$nblast);
-              
+
+        try{      
 		$db->setQuery($query,0,$nblast);
 		$res = $db->loadObjectList();
-        
-        if ( !$res && $db->getErrorNum() )
-	    {
-	    $app->enqueueMessage(JText::_(__METHOD__.' '.__LINE__.' <pre>'.print_r($query->dump(),true).'</pre>'),'Error');   
-	    $app->enqueueMessage(JText::_(__METHOD__.' '.__LINE__.' '.'<pre>'.print_r($db->getErrorNum(),true).'</pre>' ),'Error');   
-		$app->enqueueMessage(JText::_(__METHOD__.' '.__LINE__.' '.'<pre>'.print_r($db->getErrorMsg(),true).'</pre>' ),'Error');
-	    }
-        
 		if ($res) {
 			$res = array_reverse($res);
 		}
+        }
+catch (Exception $e)
+{
+    $app->enqueueMessage(JText::_(__METHOD__.' '.__LINE__.' '.$e->getMessage()), 'error');
+    $res = false;
+}
+        
+        $db->disconnect(); // See: http://api.joomla.org/cms-3/classes/JDatabaseDriver.html#method_disconnect		
 		return $res;
 	}
 }
