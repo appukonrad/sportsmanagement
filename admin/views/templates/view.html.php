@@ -49,7 +49,7 @@ class sportsmanagementViewTemplates extends sportsmanagementView {
         $mdlProject = JModelLegacy::getInstance("Project", "sportsmanagementModel");
         $project = $mdlProject->getProject($this->project_id);
         $lists = '';
-        $allTemplates = $model->checklist($this->project_id);
+        //$allTemplates = $model->checklist($this->project_id);
 
         // das sind die eigenen templates
         $templates = $this->get('Items');
@@ -101,7 +101,7 @@ class sportsmanagementViewTemplates extends sportsmanagementView {
         $this->title = JText::_('COM_SPORTSMANAGEMENT_ADMIN_TEMPLATES_TITLE');
 
             JToolbarHelper::editList('template.edit');
-            JToolbarHelper::save('template.save');
+            //JToolbarHelper::save('template.save');
 
             if ($this->projectws->master_template) {
 

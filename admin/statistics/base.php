@@ -1,9 +1,9 @@
 <?php
-/** SportsManagement ein Programm zur Verwaltung für Sportarten
+/** SportsManagement ein Programm zur Verwaltung fÃ¼r Sportarten
  * @version   1.0.05
  * @file      base.php
  * @author    diddipoeler, stony, svdoldie und donclumsy (diddipoeler@gmx.de)
- * @copyright Copyright: © 2013 Fussball in Europa http://fussballineuropa.de/ All rights reserved.
+ * @copyright Copyright: Â© 2013 Fussball in Europa http://fussballineuropa.de/ All rights reserved.
  * @license   This file is part of SportsManagement.
  * @package   sportsmanagement
  * @subpackage statistics
@@ -796,13 +796,14 @@ class SMStatistic extends JObject
         {
             case 'basic':
             case 'complexsum':
+            case 'sumstats':
             $query_core->select($select);
             $query_core->from('#__sportsmanagement_season_team_person_id AS tp');
             $query_core->join('INNER','#__sportsmanagement_person AS p ON p.id = tp.person_id ');
             $query_core->join('INNER','#__sportsmanagement_season_team_id AS st ON st.team_id = tp.team_id ');
             $query_core->join('INNER','#__sportsmanagement_project_team AS pt ON pt.team_id = st.id');
             $query_core->join('INNER','#__sportsmanagement_team AS t ON st.team_id = t.id');
-            $query_core->join('INNER','#__sportsmanagement_match_statistic AS ms ON ms.teamplayer_id = tp.id AND ms.statistic_id IN ( '. $statistic_id );
+            $query_core->join('INNER','#__sportsmanagement_match_statistic AS ms ON ms.teamplayer_id = tp.id AND ms.statistic_id IN ( '. $statistic_id .' )' );
             $query_core->join('INNER','#__sportsmanagement_match AS m ON m.id = ms.match_id AND m.published = 1');
             $query_core->where('pt.project_id = ' . $project_id);
             return $query_core;
@@ -1008,6 +1009,8 @@ try{
 		if ($project_id)
 		{
             $query->where('p.id = ' . $project_id);
+            $query->where('pt.project_id = ' . $project_id);
+            $query->where('ppos.project_id = ' . $project_id);
 		}
 		if ($sports_type_id)
 		{

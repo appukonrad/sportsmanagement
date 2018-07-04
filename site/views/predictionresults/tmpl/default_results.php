@@ -157,7 +157,7 @@ Create responsive tables by adding .table-responsive to any .table to make them 
 When viewing on anything larger than 768px wide, you will not see any difference in these tables.
 -->
         <div class="table-responsive">        
-		<table class="<?PHP echo $this->config['table_class']; ?> table-responsive">
+		<table class="<?PHP echo $this->config['table_class']; ?> <?PHP echo $this->config['table_class_responsive']; ?>">
         <thead>
 			<tr>
 				<?php 
@@ -224,8 +224,17 @@ When viewing on anything larger than 768px wide, you will not see any difference
                             {
                             $match->homeLogo = sportsmanagementHelper::getDefaultPlaceholder("clublogobig");    
                             }
-echo sportsmanagementHelperHtml::getBootstrapModalImage('predresult'.$match->homeid,$match->homeLogo,$match->homeName,'20');                               
-                            ?>                                    
+//echo sportsmanagementHelperHtml::getBootstrapModalImage('predresult'.$match->homeid,$match->homeLogo,$match->homeName,'20');                               
+                            
+ echo sportsmanagementHelperHtml::getBootstrapModalImage('predresult' . $match->homeid,
+            $match->homeLogo,
+            $match->homeName,
+            '20',
+            '',
+            $this->modalwidth,
+            $this->modalheight,
+            $this->config['use_jquery_modal']);  						
+						?>                                    
 
                             <?PHP
                             //echo sportsmanagementModelPredictionResults::showClubLogo($match->homeLogobig,$match->homeName).'<br />';
@@ -267,7 +276,16 @@ echo sportsmanagementHelperHtml::getBootstrapModalImage('predresult'.$match->hom
                             {
                             $match->awayLogo = sportsmanagementHelper::getDefaultPlaceholder("clublogobig");    
                             }
-echo sportsmanagementHelperHtml::getBootstrapModalImage('predresult'.$match->awayid,$match->awayLogo,$match->awayName,'20');                        
+//echo sportsmanagementHelperHtml::getBootstrapModalImage('predresult'.$match->awayid,$match->awayLogo,$match->awayName,'20');
+echo sportsmanagementHelperHtml::getBootstrapModalImage('predresult' . $match->awayid,
+            $match->awayLogo,
+            $match->awayName,
+            '20',
+            '',
+            $this->modalwidth,
+            $this->modalheight,
+            $this->config['use_jquery_modal']);  					
+					
                             ?>                                    
                             
                             <?PHP

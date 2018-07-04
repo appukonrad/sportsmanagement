@@ -47,6 +47,11 @@ JHtml::_('behavior.modal');
 							?>
 						</th>
 						<th>
+						<?php
+						echo JHtml::_('grid.sort','COM_SPORTSMANAGEMENT_ADMIN_PERSONS_NATIONALITY','pl.country',$this->sortDirection,$this->sortColumn);
+						?>
+</th>
+						<th>
 							<?php
 							echo JHtml::_( 'grid.sort', 'PID', 'tp.person_id', $this->sortDirection, $this->sortColumn );
 							?>
@@ -177,6 +182,25 @@ JHtml::_('behavior.modal');
 							<td>
 								<?php echo sportsmanagementHelper::formatName(null, $row->firstname, $row->nickname, $row->lastname, 0) ?>
 							</td>
+							
+<td class="nowrap" class="center">
+<?php
+$append = '';
+$inputappend = '';
+if (empty($row->country))
+{
+$append=' background-color:#FFCCCC;';
+}
+echo JHtmlSelect::genericlist($this->lists['nation'],
+		'country'.$row->person_id,
+		$inputappend.' class="form-control form-control-inline" style="width:140px; '.$append.'" onchange="document.getElementById(\'cb'.$i.'\').checked=true"',
+		'value',
+		'text',
+		$row->country);
+		?>
+</td>
+							
+							
 							<td class="center">
 								<?php
 								echo $row->person_id;

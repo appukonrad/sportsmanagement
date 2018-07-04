@@ -149,11 +149,11 @@ class SMStatisticBasic extends SMStatistic
 		
 		$query_select_count = ' COUNT(DISTINCT tp.id) as count';
 
-		$query_select_details	= ' SUM(ms.value) AS total,'
-								. ' tp.id AS teamplayer_id, tp.person_id, tp.picture AS teamplayerpic,'
-								. ' p.firstname, p.nickname, p.lastname, p.picture, p.country,'
-								. ' pt.team_id, pt.picture AS projectteam_picture,'
-								. ' t.picture AS team_picture, t.name AS team_name, t.short_name AS team_short_name';
+		$query_select_details = ' SUM(ms.value) AS total,'
+					. ' tp.id AS teamplayer_id, tp.person_id, tp.picture AS teamplayerpic,'
+					. ' p.firstname, p.nickname, p.lastname, p.picture, p.country,'
+					. ' st.team_id, pt.picture AS projectteam_picture,'
+					. ' t.picture AS team_picture, t.name AS team_name, t.short_name AS team_short_name';
 
 		
         
@@ -163,7 +163,6 @@ class SMStatisticBasic extends SMStatistic
         $query_core->join('INNER','#__sportsmanagement_season_team_id AS st ON st.team_id = tp.team_id ');
         $query_core->join('INNER','#__sportsmanagement_project_team AS pt ON pt.team_id = st.id');
         $query_core->join('INNER','#__sportsmanagement_team AS t ON st.team_id = t.id');
-        
         $query_core->join('INNER','#__sportsmanagement_match_statistic AS ms ON ms.teamplayer_id = tp.id AND ms.statistic_id = '. $db->Quote($this->id));
         $query_core->join('INNER','#__sportsmanagement_match AS m ON m.id = ms.match_id AND m.published = 1');
         $query_core->where('pt.project_id = ' . $project_id);
@@ -239,20 +238,19 @@ class SMStatisticBasic extends SMStatistic
         $select = 'SUM(ms.value) AS total, st.team_id ';
         $statistic_id = $this->id;
         $query = SMStatistic::getTeamsRanking($project_id, $limit, $limitstart, $order, $select,$statistic_id) ;
-	
         $query->order('total '.(!empty($order) ? $order : $this->getParam('ranking_order', 'DESC')).', tp.id ');
-        
-        $db->setQuery($query, $limitstart, $limit);
-        
-//        $app->enqueueMessage(JText::_(__METHOD__.' '.__LINE__.' query_core<br><pre>'.print_r($query->dump(),true).'</pre>'),'');
-
+	$query->group('st.team_id');	
 try{        
+        $db->setQuery($query, $limitstart, $limit);
 		$res = $db->loadObjectList();
 } catch (Exception $e) {
     $msg = $e->getMessage(); // Returns "Normally you would have other code...
     $code = $e->getCode(); // Returns '500';
     JFactory::getApplication()->enqueueMessage(__METHOD__.' '.__LINE__.' '.$msg, 'error'); // commonly to still display that error
 }
+
+//JFactory::getApplication()->enqueueMessage(__METHOD__.' '.__LINE__.' query<pre>'.print_r($query->dump(),true).'</pre>', 'error');
+//JFactory::getApplication()->enqueueMessage(__METHOD__.' '.__LINE__.' res<pre>'.print_r($res,true).'</pre>', 'error');
 		
 		if ($res)
 		{
