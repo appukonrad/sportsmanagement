@@ -78,7 +78,7 @@ foreach ($current as $ptid => $team) {
         }
     }
     echo "\n\n";
-    echo '<tr class=""' . $favStyle . '>';
+    echo '<tr id="rankingrow'.$team->team->id.'" class="team'.$ptid.'"' . $favStyle . '>';
     echo "\n";
 
     //**************rank row
@@ -141,7 +141,16 @@ foreach ($current as $ptid => $team) {
         } elseif ($config['show_logo_small_table'] == "country_flag_logo_small") {
             sportsmanagementHelper::showClubIcon($team->team, 2);
             echo ' ' . sportsmanagementHelper::getPictureThumb($team->team->logo_small, $team->team->name, $config['team_picture_width'], 'auto', 3);
-        } else {
+        } 
+        elseif ($config['show_logo_small_table'] == "logo_big_country_flag") {
+            echo sportsmanagementHelper::getPictureThumb($team->team->logo_big, $team->team->name, $config['team_picture_width'], 'auto', 3) . ' ';
+            sportsmanagementHelper::showClubIcon($team->team, 2);
+        }
+        elseif ($config['show_logo_small_table'] == "country_flag_logo_big") {
+            sportsmanagementHelper::showClubIcon($team->team, 2);
+            echo ' ' . sportsmanagementHelper::getPictureThumb($team->team->logo_big, $team->team->name, $config['team_picture_width'], 'auto', 3);
+        } 
+        else {
             $pic = $config['show_logo_small_table'];
 
 echo sportsmanagementHelperHtml::getBootstrapModalImage($this->teamrow . 'teamranking' . $team->team->id,
@@ -648,6 +657,9 @@ $this->overallconfig['use_jquery_modal']);
                     echo ' style="background-color:' . $color . '"';
                 }
                 echo '>';
+                ?>
+                <ul class="list-inline">
+                <?php
                 if (isset($this->previousgames[$ptid])) {
                     foreach ($this->previousgames[$ptid] as $g) {
                         $txt = $this->teams[$g->projectteam1_id]->name . ' [ ' . $g->team1_result . ' - ' . $g->team2_result . ' ] ' . $this->teams[$g->projectteam2_id]->name;
@@ -673,10 +685,18 @@ $this->overallconfig['use_jquery_modal']);
                         $routeparameter['mid'] = $g->slug;
                         $url = sportsmanagementHelperRoute::getSportsmanagementRoute('matchreport', $routeparameter);
 
-                        //$url = JRoute::_(sportsmanagementHelperRoute::getMatchReportRoute($g->project_slug, $g->slug,JFactory::getApplication()->input->getInt('cfg_which_database',0)));
+                        ?>
+                        <li class="list-inline-item">
+                        <?php
                         echo JHtml::link($url, $img, $attr);
+                        ?>
+                        </li>
+                        <?php
                     }
                 }
+                ?>
+                </ul>
+                <?php
                 echo '</td>';
                 echo "\n";
                 break;

@@ -199,8 +199,22 @@ else
 				$feed->description = $rssDoc->get_description();
 	
 				// channel image if exists
+		if ( !is_null($rssDoc->get_image_url()) )
+		{
 				$feed->image->url = $rssDoc->get_image_url();
+		}
+		else
+		{
+			$feed->image->url = '';
+		}
+		if ( !is_null($rssDoc->get_image_title()) )
+		{
 				$feed->image->title = $rssDoc->get_image_title();
+		}
+		else
+		{
+			$feed->image->title = '';
+		}
 	
 				// items
 				$items = $rssDoc->get_items();
@@ -276,7 +290,7 @@ else
 	 * @param mixed $config
 	 * @return
 	 */
-	public static function getResultsRows($round,$division,&$config,$params = NULL,$cfg_which_database = 0)
+	public static function getResultsRows($round,$division,&$config,$params = NULL,$cfg_which_database = 0,$team = 0)
 	{
 	$app = JFactory::getApplication();
 	$option = $app->input->getCmd('option');
@@ -345,6 +359,10 @@ else
         $query->join('LEFT','#__sportsmanagement_playground AS playground ON playground.id = m.playground_id');
 		
         // where
+		if ( $team )
+		{
+		$query->where('(st1.team_id = '.$team . ' OR st2.team_id = '.$team.')' );	
+		}
         $query->where('m.published = 1');
         $query->where('r.project_id = '.(int)$project->id);
         if(version_compare(JSM_JVERSION,'3','eq')) 

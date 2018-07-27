@@ -57,7 +57,8 @@
  * https://stackoverflow.com/questions/40330156/timestampdiff-how-to-use-it-in-php-mysql-to-calculate-difference-between-date
  * http://php.net/manual/de/datetime.diff.php
  * 
- * 
+ * protokollierung von fehlern
+ * http://eddify.me/posts/logging-in-joomla-with-jlog.html
  * 
  */
 
@@ -92,7 +93,7 @@ class com_sportsmanagementInstallerScript
      * The release value would ideally be extracted from <version> in the manifest file,
      * but at preflight, the manifest file exists only in the uploaded temp folder.
      */
-    private $release = '1.0.63';
+    private $release = '1.0.64';
     
     
     /**

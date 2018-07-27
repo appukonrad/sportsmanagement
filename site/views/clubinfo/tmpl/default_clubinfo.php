@@ -76,7 +76,7 @@ if (!isset($this->club)) {
             }
             if ($this->club->website) {
                 if ($this->config['show_club_internetadress_picture']) {
-                    echo '<img style="" src="http://www.thumbshots.de/cgi-bin/show.cgi?url=' . $this->club->website . '">';
+                    echo '<img style="" src="http://free.pagepeeker.com/v2/thumbs.php?size=m&url=' . $this->club->website . '">';
                 }
             }
             ?>
@@ -242,9 +242,17 @@ if (!isset($this->club)) {
                             <?php
                             echo JHtml::link($link, $playground->name);
                             if (!sportsmanagementHelper::existPicture($playground->picture)) {
-                                $playground->picture = sportsmanagementHelper::getDefaultPlaceholder('team');
+                                $playground->picture = sportsmanagementHelper::getDefaultPlaceholder('stadium');
                             }
-                            echo sportsmanagementHelperHtml::getBootstrapModalImage('playground' . $playground->id, $playground->picture, $playground->name, $this->config['playground_picture_width']);
+echo sportsmanagementHelperHtml::getBootstrapModalImage('playground' . $playground->id,
+            $playground->picture,
+            $playground->name,
+            $this->config['playground_picture_width'],
+            '',
+            $this->modalwidth,
+            $this->modalheight,
+            $this->overallconfig['use_jquery_modal']);                            
+                            
                             ?>
                         </address>
                         <?php

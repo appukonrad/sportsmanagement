@@ -99,7 +99,8 @@
 				label="COM_SPORTSMANAGEMENT_FES_RESULTS_PARAM_LABEL_SHOW_REFEREES"
 				description="COM_SPORTSMANAGEMENT_FES_RESULTS_PARAM_DESCR_SHOW_REFEREES">
 			<option value="0">JNO</option>
-			<option value="1">JYES</option>
+			<option value="1">COM_SPORTSMANAGEMENT_FES_TEAMPLAN_PARAM_OPTION1_SHOW_REFEREE</option>
+			<option value="2">COM_SPORTSMANAGEMENT_FES_TEAMPLAN_PARAM_OPTION2_SHOW_REFEREE</option>
 		</field>
 
 		<field	name="show_playground" type="extensionradiobutton" default="0"
@@ -432,7 +433,8 @@
       <option value="3">COM_SPORTSMANAGEMENT_FES_RESULTS_PARAM_OPTION_CLUB_LOGO_SMALL_COUNTRY_FLAG</option>
       <option value="4">COM_SPORTSMANAGEMENT_FES_RESULTS_PARAM_OPTION_CLUB_COUNTRY_FLAG_LOGO_SMALL</option>
       
-      <option value="7">COM_SPORTSMANAGEMENT_FES_RESULTS_PARAM_OPTION_CLUB_LOGO_BIG_COUNTRY_FLAG</option>
+      <option value="7">COM_SPORTSMANAGEMENT_FES_RANKING_PARAM_OPTION_CLUB_LOGO_BIG_COUNTRY_FLAG</option>
+	  <option value="8">COM_SPORTSMANAGEMENT_FES_RANKING_PARAM_OPTION_CLUB_COUNTRY_FLAG_LOGO_BIG</option>
 		</field>
 
 		<field	name="team_name_format" type="teamnameformat" default="2"

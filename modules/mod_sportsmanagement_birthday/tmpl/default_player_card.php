@@ -39,24 +39,24 @@ foreach ($persons AS $person) {
     $person_type = $person['type'];
     if ($person_type == 1) {
         $routeparameter = array();
-        $routeparameter['cfg_which_database'] = JRequest::getInt('cfg_which_database', 0);
-        $routeparameter['s'] = JRequest::getInt('s', 0);
+        $routeparameter['cfg_which_database'] = $params->get("cfg_which_database");
+        $routeparameter['s'] = $person['season_slug'];
         $routeparameter['p'] = $person['project_slug'];
         $routeparameter['tid'] = $person['team_slug'];
         $routeparameter['pid'] = $person['person_slug'];
         $person_link = sportsmanagementHelperRoute::getSportsmanagementRoute('player', $routeparameter);
     } else if ($person_type == 2) {
         $routeparameter = array();
-        $routeparameter['cfg_which_database'] = JRequest::getInt('cfg_which_database', 0);
-        $routeparameter['s'] = JRequest::getInt('s', 0);
+        $routeparameter['cfg_which_database'] = $params->get("cfg_which_database");
+        $routeparameter['s'] = $person['season_slug'];
         $routeparameter['p'] = $person['project_slug'];
         $routeparameter['tid'] = $person['team_slug'];
         $routeparameter['pid'] = $person['person_slug'];
         $person_link = sportsmanagementHelperRoute::getSportsmanagementRoute('staff', $routeparameter);
     } else if ($person_type == 3) {
         $routeparameter = array();
-        $routeparameter['cfg_which_database'] = JRequest::getInt('cfg_which_database', 0);
-        $routeparameter['s'] = JRequest::getInt('s', 0);
+        $routeparameter['cfg_which_database'] = $params->get("cfg_which_database");
+        $routeparameter['s'] = $person['season_slug'];
         $routeparameter['p'] = $person['project_slug'];
         $routeparameter['pid'] = $person['person_slug'];
         $person_link = sportsmanagementHelperRoute::getSportsmanagementRoute('referee', $routeparameter);

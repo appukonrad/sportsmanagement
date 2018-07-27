@@ -829,7 +829,7 @@ catch (Exception $e)
           $query->select('t.picture as team_picture,t.id,t.name,t.short_name,t.middle_name,t.notes,t.club_id');
           $query->select('u.username,u.email');
           $query->select('st.team_id');
-          $query->select('c.email as club_email,c.logo_small,c.logo_middle,c.logo_big,c.country,c.website,c.new_club_id');
+          $query->select('c.email as club_email,c.phone as club_phone,c.fax as club_fax,c.logo_small,c.logo_middle,c.logo_big,c.country,c.website,c.new_club_id');
           $query->select('d.name AS division_name,d.shortname AS division_shortname,d.parent_id AS parent_division_id');
           $query->select('plg.name AS playground_name,plg.short_name AS playground_short_name');
           $query->select('CONCAT_WS(\':\',p.id,p.alias) AS project_slug');
@@ -840,7 +840,7 @@ catch (Exception $e)
           
           // für die anzeige der teams im frontend
           $query->select('t.name as team_name,t.short_name,t.middle_name,t.club_id,t.website AS team_www,t.picture as team_picture,c.name as club_name,c.address as club_address');
-          $query->select('c.zipcode as club_zipcode,c.state as club_state,c.location as club_location,c.email as club_email,c.unique_id,c.country as club_country,c.website AS club_www');
+          $query->select('c.zipcode as club_zipcode,c.state as club_state,c.location as club_location,c.unique_id,c.country as club_country,c.website AS club_www');
           
           $query->from('#__sportsmanagement_project_team AS tl ');
           $query->join('LEFT',' #__sportsmanagement_season_team_id st ON st.id = tl.team_id ');
@@ -1557,6 +1557,8 @@ $use_jquery_modal);
     $db->setQuery($query);
 	$result = $db->loadObjectList();
 	
+//$app->enqueueMessage(__METHOD__.' '.__LINE__.' result<pre>'.print_r($result, true).'</pre><br>','Error');
+    
 	foreach ($result AS $inout)
 	{
     $query->clear();
@@ -1567,6 +1569,8 @@ $use_jquery_modal);
     $query->where('tp1.id = '.$inout->teamplayer_id );
     $db->setQuery($query);
 	$result1 = $db->loadObject();
+
+//$app->enqueueMessage(__METHOD__.' '.__LINE__.' result1<pre>'.print_r($result1, true).'</pre><br>','Error');
 
 	$inout->firstname = $result1->firstname;
 	$inout->nickname = $result1->nickname;
@@ -1581,6 +1585,9 @@ $use_jquery_modal);
 	$query->where('pos.id = '.$inout->project_position_id );
 	$db->setQuery($query);
     $result1 = $db->loadObject();
+    
+//$app->enqueueMessage(__METHOD__.' '.__LINE__.' result1<pre>'.print_r($result1, true).'</pre><br>','Error');
+    
 	$inout->in_position = $result1->name;	
 	
     $query->clear();
@@ -1590,6 +1597,9 @@ $use_jquery_modal);
     $query->where('ppos.project_id = '.(int)self::$projectid );
 	$db->setQuery($query);
     $result2 = $db->loadObject();
+    
+//$app->enqueueMessage(__METHOD__.' '.__LINE__.' result2<pre>'.print_r($result2, true).'</pre><br>','Error');
+    
 	$inout->pposid1 = $result2->id;
     	
 	$query->clear();
@@ -1600,6 +1610,9 @@ $use_jquery_modal);
     $query->where('tp1.id = '.$inout->in_for );
     $db->setQuery($query);
 	$result1 = $db->loadObject();
+    
+//$app->enqueueMessage(__METHOD__.' '.__LINE__.' result1<pre>'.print_r($result1, true).'</pre><br>','Error');
+    
 	$inout->out_firstname = $result1->out_firstname;
 	$inout->out_nickname = $result1->out_nickname;
 	$inout->out_lastname = $result1->out_lastname;
@@ -1615,6 +1628,9 @@ $use_jquery_modal);
 	$query->where('mp.match_id = '.(int)$match_id);	
 	$db->setQuery($query);	
     $result1 = $db->loadObject();
+    
+//$app->enqueueMessage(__METHOD__.' '.__LINE__.' result1<pre>'.print_r($result1, true).'</pre><br>','Error');
+    
 	$inout->out_position = $result1->name;	
 	
     $query->clear();
@@ -1622,10 +1638,22 @@ $use_jquery_modal);
 	$query->from('#__sportsmanagement_project_position AS ppos');
     $query->where('ppos.position_id = '.$result1->id );
     $query->where('ppos.project_id = '.(int)self::$projectid );
+		try {
 	$db->setQuery($query);
     $result2 = $db->loadObject();
+    
+//$app->enqueueMessage(__METHOD__.' '.__LINE__.' result2<pre>'.print_r($result2, true).'</pre><br>','Error');
+    
 	$inout->pposid2 = $result2->id;
-    	
+    	 }
+catch (Exception $e) {
+    // catch any database errors.
+	$inout->pposid2 = 0;
+	$app->enqueueMessage(__METHOD__.' '.__LINE__.' <pre>'.print_r($e->getMessage(), true).'</pre><br>','Error');
+//    $db->transactionRollback();
+//    JErrorPage::render($e);
+}
+		
 	$query->clear();
 	$query->select('pt.team_id,pt.id AS ptid');
 	$query->select('CASE WHEN CHAR_LENGTH(t.alias) THEN CONCAT_WS(\':\',t.id,t.alias) ELSE t.id END AS team_slug');
@@ -1637,6 +1665,9 @@ $use_jquery_modal);
 	$query->where('tp1.id = '.$inout->teamplayer_id );
 	$db->setQuery($query);
 	$result1 = $db->loadObject();
+    
+//$app->enqueueMessage(__METHOD__.' '.__LINE__.' result1<pre>'.print_r($result1, true).'</pre><br>','Error');
+    
 	$inout->ptid = $result1->ptid;	
 	$inout->team_id = $result1->team_slug;
     $inout->team_slug = $result1->team_slug;

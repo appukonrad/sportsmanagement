@@ -99,7 +99,7 @@ if(file_exists(JPATH_ROOT.'/components/com_jcomments/classes/config.php'))
     	?>
 	<!-- DATE HEADER -->
     <thead>
-	<tr >
+	<tr id="" class="" >
 
 		<?php
         $timestamp = strtotime($date);
@@ -235,7 +235,7 @@ $report_link = sportsmanagementHelperRoute::getSportsmanagementRoute('nextmatch'
 			}
 			?>
 
-	<tr	class=""<?php echo $favStyle; ?>>
+	<tr class="team<?php echo $game->projectteam1_id;?>  team<?php echo $game->projectteam2_id;?> "<?php echo $favStyle;?> >
 		<?php
 		if ($this->config['show_match_number'])
 		{
@@ -398,7 +398,7 @@ $this->overallconfig['use_jquery_modal']);
 	?>
 	<?php
 //--------------------------------------------------------------------------------------------------------------
-		if ($this->config['result_style']==1)
+		if ( $this->config['result_style'] == 1 )
 		{
 			?>
 			<!-- show team-icons and/or -names -->
@@ -487,24 +487,37 @@ $this->overallconfig['use_jquery_modal']); ?>
 	?>
 
 		<!-- show hammer if there is a alternative decision of the score -->
-		<td width="" class="">
+		<td width="" class="" id="">
 		<?php sportsmanagementViewResults::showReportDecisionIcons($game); ?>
 		</td>
 
 		<?php
-		if($this->config['show_referee'])
-		{
-			?>
+        switch ( $this->config['show_referee'] )
+        {
+            case 0:
+            break;
+            case 1:
+            ?>
 		<!-- show matchreferees icon with tooltip -->
-			<td width="" class="">
+			<td width="" class="" id="">
 			<?php sportsmanagementViewResults::showMatchRefereesAsTooltip($game,$this->project,$this->config); ?>
 			</td>
 		<?php
-		}
+            break;
+            case 2:
+            ?>
+		<!-- show matchreferees icon with tooltip -->
+			<td width="" class="" id="">
+			<?php sportsmanagementViewResults::showMatchRefereesAsTooltip($game,$this->project,$this->config); ?>
+			</td>
+		<?php
+            break;
+        }
+        
 		?>
 
 		<?php
-		if (($this->config['show_playground'] || $this->config['show_playground_alert']))
+		if ( $this->config['show_playground'] || $this->config['show_playground_alert'] )
 		{
 			?>
 		<!-- show only playground or playgroundalert if playgrund differs from normal -->
@@ -516,7 +529,7 @@ $this->overallconfig['use_jquery_modal']); ?>
 		?>
 
 		<?php
-		if ($this->config['show_attendance_column'])
+		if ( $this->config['show_attendance_column'] )
 		{
 			?>
 		<!-- show attendance -->

@@ -544,6 +544,15 @@ filter="safehtml"/>
 			preview="show">			
 		</field>
 		
+		<field name="ph_stadium" 
+    type="media"
+			default="images/com_sportsmanagement/database/placeholders/placeholder_stadium.png"
+			label="COM_SPORTSMANAGEMENT_SETTINGS_LABEL_PH_STADIUM" 
+			description="COM_SPORTSMANAGEMENT_SETTINGS_DESCR_PH_STADIUM"
+			directory="images/com_sportsmanagement/database/placeholders/"
+			preview="show">			
+		</field>
+		
 		<field type="spacer" name="spacera" label="COM_SPORTSMANAGEMENT_SETTINGS_MATCH_MAIL" 
           description="COM_SPORTSMANAGEMENT_SETTINGS_MATCH_MAIL_DESC" />
           
@@ -588,7 +597,7 @@ class="radio btn-group btn-group-yesno"
 			<option value="1">JYES</option>
 		</field>
 
-<field name="boostrap_div_class" type="list" default=""
+<field name="boostrap_div_class" type="list" default="row"
 			label="COM_SPORTSMANAGEMENT_BOOTSTRAP_DIV_CLASS_FRONTEND" description="COM_SPORTSMANAGEMENT_BOOTSTRAP_DIV_CLASS_FRONTEND_DESC">
 			<option value="">JNO</option>
 			<option value="row">row</option>
@@ -603,7 +612,7 @@ class="radio btn-group btn-group-yesno"
 	
                 <field name="use_jsmflex" type="extensionradiobutton" default="0"
 class="radio btn-group btn-group-yesno"
-			label="COM_SPORTSMANAGEMENT_SETTINGS_USE_JSM_FLEX" description="COM_SPORTSMANAGEMENT_SETTINGS_USE_JSM_GRID_DESC">
+			label="COM_SPORTSMANAGEMENT_SETTINGS_USE_JSM_FLEX" description="COM_SPORTSMANAGEMENT_SETTINGS_USE_JSM_FLEX_DESC">
 			<option value="0">JNO</option>
 			<option value="1">JYES</option>
 		</field>

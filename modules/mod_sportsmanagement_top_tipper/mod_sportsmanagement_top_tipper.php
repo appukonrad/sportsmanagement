@@ -43,6 +43,7 @@ require_once(JPATH_ADMINISTRATOR.DS.JSM_PATH.DS.'libraries'.DS.'sportsmanagement
 require_once( JPATH_SITE . DS . JSM_PATH . DS . 'helpers' . DS . 'route.php' );
 require_once( JPATH_SITE . DS . JSM_PATH . DS . 'helpers' . DS . 'predictionroute.php' );
 require_once( JPATH_SITE . DS . JSM_PATH . DS . 'models' . DS . 'predictionranking.php' );
+require_once( JPATH_SITE . DS . JSM_PATH . DS . 'models' . DS . 'prediction.php' );
 
 /**
  * get helper
@@ -52,6 +53,17 @@ require_once( dirname(__FILE__) . DS . 'helper.php' );
 $document = JFactory::getDocument();
 $mainframe = JFactory::getApplication();
 $config    = array();
+
+/**
+ * sprachdatei aus dem frontend laden
+ */
+$langtag = JFactory::getLanguage();
+$lang = JFactory::getLanguage();
+$extension = 'com_sportsmanagement';
+$base_dir = JPATH_SITE;
+$language_tag = $langtag->getTag();
+$reload = true;
+$lang->load($extension, $base_dir, $language_tag, $reload);
 
 /**
  * add css file
@@ -101,9 +113,9 @@ $actJoomlaUser[]      = JFactory::getUser();
 $roundID              = sportsmanagementModelPrediction::$roundID;
 
 $type_array    = array();
-$type_array[]  = JHTML::_('select.option', '0', JText::_('JL_PRED_RANK_FULL_RANKING'));
-$type_array[]  = JHTML::_('select.option', '1', JText::_('JL_PRED_RANK_FIRST_HALF'));
-$type_array[]  = JHTML::_('select.option', '2', JText::_('JL_PRED_RANK_SECOND_HALF'));
+$type_array[]  = JHTML::_('select.option', '0', JText::_('COM_SPORTSMANAGEMENT_RANKING_FULL_RANKING'));
+$type_array[]  = JHTML::_('select.option', '1', JText::_('COM_SPORTSMANAGEMENT_RANKING_FIRST_HALF_RANKING'));
+$type_array[]  = JHTML::_('select.option', '2', JText::_('COM_SPORTSMANAGEMENT_RANKING_SECOND_HALF_RANKING'));
 $lists['type'] = $type_array;
 unset($type_array);
 

@@ -369,7 +369,7 @@ $link = sportsmanagementHelperRoute::getSportsmanagementRoute('ical',$routeparam
     case 'teaminfo':
     ?>
 <!-- START: Contentheading -->
-<div class="">
+<div class="container">
 	<h4>
 		<?php echo JText::_('COM_SPORTSMANAGEMENT_TEAMINFO_PAGE_TITLE') . " - " . $this->team->tname;
 		if ( $this->showediticon )
@@ -424,7 +424,8 @@ $this->overallconfig['use_jquery_modal']);
     break;
     default:
     ?>
-    <table class="table" >
+    <div class="row" id="sectionheader">
+    <table class="table" id="sectionheader">
     <tr>
     <td class="contentheading">
     <h4>
@@ -435,6 +436,7 @@ $this->overallconfig['use_jquery_modal']);
     </td>
     </tr>
     </table>
+    </div>
     <br />
     <?PHP
     break;

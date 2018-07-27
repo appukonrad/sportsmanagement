@@ -29,22 +29,72 @@ class sportsmanagementModelteamperson extends JSMModelAdmin
     var $_project_team_id = 0;
     static $db_num_rows = 0;
 
+/**
+ * sportsmanagementModelteamperson::assignplayerscountry()
+ * 
+ * @param integer $persontype
+ * @param integer $project_team_id
+ * @param integer $team_id
+ * @param integer $pid
+ * @param integer $season_id
+ * @return void
+ */
+function assignplayerscountry($persontype=1,$project_team_id=0,$team_id=0,$pid=0,$season_id=0)
+{
+//$this->jsmapp->enqueueMessage(__METHOD__.' '.__LINE__. ' persontype <br><pre>'.print_r($persontype, true).'</pre><br>','Notice');	
+//$this->jsmapp->enqueueMessage(__METHOD__.' '.__LINE__. ' project_team_id <br><pre>'.print_r($project_team_id, true).'</pre><br>','Notice');
+//$this->jsmapp->enqueueMessage(__METHOD__.' '.__LINE__. ' team_id <br><pre>'.print_r($team_id, true).'</pre><br>','Notice');
+//$this->jsmapp->enqueueMessage(__METHOD__.' '.__LINE__. ' pid <br><pre>'.print_r($pid, true).'</pre><br>','Notice');
+//$this->jsmapp->enqueueMessage(__METHOD__.' '.__LINE__. ' season_id <br><pre>'.print_r($season_id, true).'</pre><br>','Notice');	
+
+$this->jsmquery->clear();
+$this->jsmquery->select('c.country');
+$this->jsmquery->from('#__sportsmanagement_club as c');
+$this->jsmquery->join('INNER','#__sportsmanagement_team as t on t.club_id = c.id');
+$this->jsmquery->where('t.id = '.$team_id);	
+$this->jsmdb->setQuery($this->jsmquery);
+$this->country = $this->jsmdb->loadResult();	
+//$this->jsmapp->enqueueMessage(__METHOD__.' '.__LINE__. ' country <br><pre>'.print_r($this->country, true).'</pre><br>','Notice');		
 	
+$this->jsmquery->clear();	
+$this->jsmquery->select('person_id');
+$this->jsmquery->from('#__sportsmanagement_season_team_person_id');
+$this->jsmquery->where('team_id = '.$team_id );
+$this->jsmquery->where('season_id = '.$season_id) ;
+$this->jsmquery->where('persontype = '.$persontype );	
+$this->jsmdb->setQuery($this->jsmquery);
+$this->person_list = $this->jsmdb->loadObjectList();
+//$this->jsmapp->enqueueMessage(__METHOD__.' '.__LINE__. ' person_list <br><pre>'.print_r($this->person_list, true).'</pre><br>','Notice');			
+
+foreach ( $this->person_list as $row )
+{
+$rowInsert = new stdClass();
+$rowInsert->id = $row->person_id ;
+$rowInsert->country = $this->country;
+$result = JFactory::getDbo()->updateObject('#__sportsmanagement_person', $rowInsert, 'id'); 	
+}
+	
+	
+}
+	
+	
+
 /**
  * sportsmanagementModelteamperson::set_state()
  * 
  * @param mixed $ids
  * @param mixed $tpids
  * @param mixed $state
+ * @param integer $pid
  * @return void
  */
-function set_state($ids,$tpids,$state)
+function set_state($ids,$tpids,$state,$pid=0)
 {	
 $this->jsmuser = JFactory::getUser(); 
 $this->jsmdate = JFactory::getDate();
 
 for ($x=0; $x < count($ids); $x++)
-		{
+{
 $person_id = $ids[$x];		  
 $season_team_person_id = $tpids[$person_id];          
 // Create an object for the record we are going to update.
@@ -56,8 +106,36 @@ $object->modified = $this->jsmdate->toSql();
 $object->modified_by = $this->jsmuser->get('id');
 // Update their details in the table using id as the primary key.
 $result = JFactory::getDbo()->updateObject('#__sportsmanagement_season_team_person_id', $object, 'id'); 
-          
-        }  
+
+$this->jsmquery->clear();
+// Fields to update.
+$fields = array(
+    $this->jsmdb->quoteName('published') . ' = ' . $state,
+    $this->jsmdb->quoteName('modified') . ' = '.$this->jsmdb->Quote( '' . $this->jsmdate->toSql() . '' ) ,
+    $this->jsmdb->quoteName('modified_by') . ' = '.$this->jsmuser->get('id')
+);
+
+// Conditions for which records should be updated.
+$conditions = array(
+    $this->jsmdb->quoteName('person_id') . ' = '.$person_id, 
+    $this->jsmdb->quoteName('project_id') . ' = ' . $pid 
+);
+
+try{
+$this->jsmquery->update($this->jsmdb->quoteName('#__sportsmanagement_person_project_position'))->set($fields)->where($conditions);
+$this->jsmdb->setQuery($this->jsmquery);
+$resultupdate = $this->jsmdb->execute();
+}
+        catch (Exception $e)
+        {
+        $this->jsmapp->enqueueMessage(JText::_(__METHOD__.' '.' '.__LINE__.' '.$e->getMessage()), 'error');
+        //return false;
+        }
+
+
+
+} 
+         
 }
 	
     /**
@@ -99,23 +177,16 @@ $project_ref_positions = $mdlPositions->getProjectPositions($this->project_id, 1
 if ($project_ref_positions) {
             $position_ids = array_merge($position_ids, $project_ref_positions);
         }
-//$app->enqueueMessage(' position_ids<br><pre>'.print_r($position_ids, true).'</pre><br>','Notice');
+
 for ($x=0; $x < count($pks); $x++)
 {
-
-
 $team_player_id = $post['tpid'][$pks[$x]];
-//$app->enqueueMessage('player id<br><pre>'.print_r($team_player_id, true).'</pre><br>','Notice');
 $project_position_id = $post['project_position_id'.$pks[$x]];
-//$app->enqueueMessage(' project_position_id<br><pre>'.print_r($project_position_id, true).'</pre><br>','Notice');
 foreach($position_ids as $items => $item) {
     if($item->value == $project_position_id) {
        $results = $item->position_id;
     }
 } 	
-
-//$app->enqueueMessage(' results <br><pre>'.print_r($results , true).'</pre><br>','Notice');
-
 
 $this->jsmquery->clear();
 // Fields to update.
@@ -131,14 +202,13 @@ $conditions = array(
 
 try{
 $this->jsmquery->update($this->jsmdb->quoteName('#__sportsmanagement_match_player'))->set($fields)->where($conditions);
-//$this->jsmapp->enqueueMessage(JText::_(__METHOD__.' '.__LINE__.' jsmquery<br><pre>'.print_r($this->jsmquery,true).'</pre>'),'');	   
 $this->jsmdb->setQuery($this->jsmquery);
 $resultupdate = $this->jsmdb->execute();
 }
         catch (Exception $e)
         {
-        $this->jsmapp->enqueueMessage(JText::_(__METHOD__.' '.' '.$e->getMessage()), 'error');
-        return false;
+        $this->jsmapp->enqueueMessage(JText::_(__METHOD__.' '.' '.__LINE__.' '.$e->getMessage()), 'error');
+        //return false;
         }
 }
 // ###############################
@@ -176,18 +246,6 @@ $conditions = array(
 $query->clear(); 
 $query->update($db->quoteName('#__sportsmanagement_season_team_person_id'))->set($fields)->where($conditions);
 $db->setQuery($query);
-//sportsmanagementModeldatabasetool::runJoomlaQuery(__CLASS__);
-        
-            if ( COM_SPORTSMANAGEMENT_SHOW_DEBUG_INFO )
-            {
-            $my_text = 'id<br><pre>'.print_r($pks[$x], true).'</pre><br>';
-            $my_text .= 'project_position_id<br><pre>'.print_r($post['project_position_id'.$pks[$x]], true).'</pre><br>';
-            $my_text .= 'jerseynumber<br><pre>'.print_r($post['jerseynumber'.$pks[$x]], true).'</pre><br>';
-            $my_text .= 'market_value<br><pre>'.print_r($post['market_value'.$pks[$x]], true).'</pre><br>';
-            $my_text .= 'position_id<br><pre>'.print_r($post['position_id'.$pks[$x]], true).'</pre><br>';
-            $my_text .= 'person_id<br><pre>'.print_r($post['person_id'.$pks[$x]], true).'</pre><br>';
-        sportsmanagementHelper::setDebugInfoText(__METHOD__,__FUNCTION__,__CLASS__,__LINE__,$my_text);
-            }
 
 			//if(!$tblPerson->store()) 
             if( !sportsmanagementModeldatabasetool::runJoomlaQuery(__CLASS__) )
@@ -233,7 +291,7 @@ $db->setQuery($query);
                 sportsmanagementModeldatabasetool::runJoomlaQuery(__CLASS__);
                 if ( self::$db_num_rows )
                 {
-                $app->enqueueMessage(JText::sprintf('COM_SPORTSMANAGEMENT_'.strtoupper('sportsmanagement_person_project_position').'_ITEMS_DELETED',self::$db_num_rows),'');
+                $app->enqueueMessage(JText::sprintf('COM_'.strtoupper('sportsmanagement_person_project_position').'_ITEMS_DELETED',self::$db_num_rows),'');
                 } 
 
                                   
@@ -244,6 +302,7 @@ $db->setQuery($query);
                 $profile->project_id = $this->_project_id;
                 $profile->project_position_id = $post['project_position_id'.$pks[$x]];
                 $profile->persontype = $this->persontype;
+                $profile->published = 1;
                 // Insert the object into table.
                 $result = JFactory::getDbo()->insertObject('#__sportsmanagement_person_project_position', $profile);
                 

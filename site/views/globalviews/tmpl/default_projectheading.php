@@ -10,14 +10,23 @@
  */
 
 defined( '_JEXEC' ) or die( 'Restricted access' );
+$document = JFactory::getDocument();
 
-//echo 'this->project<br /><pre>~' . print_r($this->project,true) . '~</pre><br />';
-
-if ( COM_SPORTSMANAGEMENT_SHOW_DEBUG_INFO )
-{
-//echo 'this->overallconfig<br /><pre>~' . print_r($this->overallconfig,true) . '~</pre><br />';
-//echo 'this->project<br /><pre>~' . print_r($this->project,true) . '~</pre><br />';
-}
+?>
+<script>
+console.log("jquery version : "+jQuery().jquery);
+console.log("bootstrap version : "+jQuery.fn.tooltip.Constructor.VERSION);
+	
+if( typeof jQuery.fn.tooltip.Constructor.VERSION === 'undefined' || jQuery.fn.tooltip.Constructor.VERSION === null ){
+console.log("bootstrap version ist nicht vorhanden");   
+<?php	
+$stylelink = '<link rel="stylesheet" href="' . JURI::root() . 'components/com_sportsmanagement/assets/css/jsmbootstrap.css' . '" type="text/css" />' . "\n";
+$document->addCustomTag($stylelink);
+?>	
+}	
+	
+</script>
+<?php
 
 $nbcols = 2;
 if ( $this->overallconfig['show_project_sporttype_picture'] ) { $nbcols++; }
@@ -28,7 +37,7 @@ if ( $this->overallconfig['show_project_heading'] == 1 && $this->project)
 {
 	?>
 <!--	<div class="componentheading"> -->
-<!--		<div class="container"> -->
+<div class="row" id="projectheading">
 		<table class="table">
 <!--				<tbody> -->
 				<?php
@@ -170,7 +179,7 @@ echo JText::sprintf('COM_SPORTSMANAGEMENT_COPYRIGHT_INFO','<i>'.$copyright.'</i>
 				</tr>
 <!--				</tbody> -->
 		</table>
-<!--	</div> -->
+</div>
 <?php 
 }
 else
@@ -178,7 +187,7 @@ else
 	if ( $this->overallconfig['show_print_button'] )
 	{
 ?>
-		<div class="<?php echo COM_SPORTSMANAGEMENT_BOOTSTRAP_DIV_CLASS; ?>">
+		<div class="row">
 			<table class="table">
 	<!--				<tbody> -->
 					<tr class="contentheading">

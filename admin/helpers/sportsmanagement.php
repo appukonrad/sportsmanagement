@@ -77,7 +77,8 @@ abstract class sportsmanagementHelper {
                     'title' => $text,
                     'url' => $url,
                     'height' => $height,
-                    'width' => $width
+                    'width' => $width,
+                    'footer' => '<button type="button" class="btn btn-default" data-dismiss="modal">'.JText::_('JCANCEL').'</button>'
                         )
         );
 
@@ -186,7 +187,7 @@ abstract class sportsmanagementHelper {
      * das template kann angepasst werden
      * @return
      */
-    function jsmsernum() {
+    public static function jsmsernum() {
         $template = 'XX99-XX99-99XX-99XX-XXXX-99XX';
         $k = strlen($template);
         $sernum = '';
@@ -1410,12 +1411,35 @@ abstract class sportsmanagementHelper {
         $ph_logo_small = $params->get('ph_logo_small', 0);
         $ph_icon = $params->get('ph_icon', 'images/com_sportsmanagement/database/placeholders/placeholder_21.png');
         $ph_team = $params->get('ph_team', 0);
+	$ph_stadium = $params->get('ph_stadium', 0);
+	    
+	    $ph_player_men_large = $params->get('ph_player_men_large', 0);
+	    $ph_player_men_small = $params->get('ph_player_men_small', 0);
+	    $ph_player_woman_large = $params->get('ph_player_woman_large', 0);
+	    $ph_player_woman_small = $params->get('ph_player_woman_small', 0);
 
         //setup the different placeholders
         switch ($type) {
             case "player": //player
                 return $ph_player;
                 break;
+	 case "stadium": //
+                return $ph_stadium;
+                break;
+			
+	case "menlarge": //
+                return $ph_player_men_large;
+                break;
+	case "mensmall": //
+                return $ph_player_men_small;
+                break;
+	case "womanlarge": //
+                return $ph_player_woman_large;
+                break;
+	case "womansmall": //
+                return $ph_player_woman_small;
+                break;
+			
             case "clublogobig": //club logo big
             case "logo_big":
                 return $ph_logo_big;
@@ -1729,7 +1753,7 @@ abstract class sportsmanagementHelper {
         $clubSlug = (isset($team->club_slug) ? $team->club_slug : $team->club_id);
         $division_slug = (isset($team->division_slug) ? $team->division_slug : $team->division_id);
         $projectSlug = (isset($team->project_slug) ? $team->project_slug : $team->project_id);
-        $output = '';
+        $output = '<ul class="list-inline">';
 
         if ($config['show_team_link']) {
             $routeparameter = array();
@@ -1743,7 +1767,9 @@ abstract class sportsmanagementHelper {
             $title = JText::_('COM_SPORTSMANAGEMENT_TEAMICONS_ROSTER_LINK') . '&nbsp;' . $teamname;
             $picture = 'media/com_sportsmanagement/jl_images/team_icon.png';
             $desc = self::getPictureThumb($picture, $title, 0, 0, 4);
+		$output .= '<li class="list-inline-item">';
             $output .= JHtml::link($link, $desc);
+		$output .= '</li>';
         }
 
         if (((!isset($team_plan)) || ($teamid != $team_plan->id)) && ($config['show_plan_link'])) {
@@ -1759,7 +1785,9 @@ abstract class sportsmanagementHelper {
             $title = JText::_('COM_SPORTSMANAGEMENT_TEAMICONS_TEAMPLAN_LINK') . '&nbsp;' . $teamname;
             $picture = 'media/com_sportsmanagement/jl_images/calendar_icon.gif';
             $desc = self::getPictureThumb($picture, $title, 0, 0, 4);
+		$output .= '<li class="list-inline-item">';
             $output .= JHtml::link($link, $desc);
+		$output .= '</li>';
         }
 
         if ($config['show_curve_link']) {
@@ -1775,7 +1803,9 @@ abstract class sportsmanagementHelper {
             $title = JText::_('COM_SPORTSMANAGEMENT_TEAMICONS_CURVE_LINK') . '&nbsp;' . $teamname;
             $picture = 'media/com_sportsmanagement/jl_images/curve_icon.gif';
             $desc = self::getPictureThumb($picture, $title, 0, 0, 4);
+		$output .= '<li class="list-inline-item">';
             $output .= JHtml::link($link, $desc);
+		$output .= '</li>';
         }
 
         if ($config['show_teaminfo_link']) {
@@ -1790,7 +1820,9 @@ abstract class sportsmanagementHelper {
             $title = JText::_('COM_SPORTSMANAGEMENT_TEAMICONS_TEAMINFO_LINK') . '&nbsp;' . $teamname;
             $picture = 'media/com_sportsmanagement/jl_images/teaminfo_icon.png';
             $desc = self::getPictureThumb($picture, $title, 0, 0, 4);
+		$output .= '<li class="list-inline-item">';
             $output .= JHtml::link($link, $desc);
+		$output .= '</li>';
         }
 
         if ($config['show_club_link']) {
@@ -1806,7 +1838,9 @@ abstract class sportsmanagementHelper {
             $title = JText::_('COM_SPORTSMANAGEMENT_TEAMICONS_CLUBINFO_LINK') . '&nbsp;' . $teamname;
             $picture = 'media/com_sportsmanagement/jl_images/mail.gif';
             $desc = self::getPictureThumb($picture, $title, 0, 0, 4);
+		$output .= '<li class="list-inline-item">';
             $output .= JHtml::link($link, $desc);
+		$output .= '</li>';
         }
 
         if ($config['show_teamstats_link']) {
@@ -1820,7 +1854,9 @@ abstract class sportsmanagementHelper {
             $title = JText::_('COM_SPORTSMANAGEMENT_TEAMICONS_TEAMSTATS_LINK') . '&nbsp;' . $teamname;
             $picture = 'media/com_sportsmanagement/jl_images/teamstats_icon.png';
             $desc = self::getPictureThumb($picture, $title, 0, 0, 4);
+		$output .= '<li class="list-inline-item">';
             $output .= JHtml::link($link, $desc);
+		$output .= '</li>';
         }
 
         if ($config['show_clubplan_link']) {
@@ -1835,7 +1871,9 @@ abstract class sportsmanagementHelper {
             $title = JText::_('COM_SPORTSMANAGEMENT_TEAMICONS_CLUBPLAN_LINK') . '&nbsp;' . $teamname;
             $picture = 'media/com_sportsmanagement/jl_images/clubplan_icon.png';
             $desc = self::getPictureThumb($picture, $title, 0, 0, 4);
+		$output .= '<li class="list-inline-item">';
             $output .= JHtml::link($link, $desc);
+		$output .= '</li>';
         }
 
         if ($config['show_rivals_link']) {
@@ -1849,9 +1887,11 @@ abstract class sportsmanagementHelper {
             $title = JText::_('COM_SPORTSMANAGEMENT_TEAMICONS_RIVALS_LINK') . '&nbsp;' . $teamname;
             $picture = 'media/com_sportsmanagement/jl_images/rivals.png';
             $desc = self::getPictureThumb($picture, $title, 0, 0, 4);
+		$output .= '<li class="list-inline-item">';
             $output .= JHtml::link($link, $desc);
+		$output .= '</li>';
         }
-
+$output .= '</ul>';
         return $output;
     }
 

@@ -64,6 +64,7 @@ class sportsmanagementModelRoster extends JModelLegacy
 		self::$projectteamid = $app->input->get('ptid', 0, 'INT');
 		sportsmanagementModelProject::$projectid = self::$projectid;
         self::$cfg_which_database = $app->input->get('cfg_which_database', 0, 'INT');
+		sportsmanagementModelProject::$cfg_which_database = self::$cfg_which_database;
         sportsmanagementModelProject::setProjectID(self::$projectid,self::$cfg_which_database);
 		self::getProjectTeam();
 	}
@@ -245,27 +246,19 @@ class sportsmanagementModelRoster extends JModelLegacy
 	$query->where('pt.project_id = '.self::$projectid);
 	$query->where('pro.id = '.self::$projectid);
         $query->order('pos.ordering, ppos.position_id, tp.ordering, tp.jerseynumber, pr.lastname, pr.firstname');
-           
+           try{
             $db->setQuery($query);
-            
-            if ( COM_SPORTSMANAGEMENT_SHOW_QUERY_DEBUG_INFO )
-        {
-            $app->enqueueMessage(JText::_(__METHOD__.' '.__LINE__.' <br><pre>'.print_r($query->dump(),true).'</pre>'),'Notice');
-        $app->enqueueMessage(JText::_(__METHOD__.' '.__LINE__.' Ausfuehrungszeit query<br><pre>'.print_r(sportsmanagementModeldatabasetool::getQueryTime($starttime, microtime()),true).'</pre>'),'Notice');
-        }
-        
             self::$_players = $db->loadObjectList();
-            
-            if ( !self::$_players && COM_SPORTSMANAGEMENT_SHOW_DEBUG_INFO )
-            {
-            $app->enqueueMessage(JText::_(__METHOD__.' '.__LINE__.'<br><pre>'.print_r($db->getErrorMsg(),true).'</pre>'),'Error');   
-            $app->enqueueMessage(JText::_(__METHOD__.' '.__LINE__.'<br><pre>'.print_r($query->dump(),true).'</pre>'),'Error'); 
             }
+catch (Exception $e){
+$app->enqueueMessage(JText::_(__METHOD__.' '.__LINE__.' fehlertext<br><pre>'.print_r($e->getMessage(),true).'</pre>'),'Error');	
+$app->enqueueMessage(JText::_(__METHOD__.' '.__LINE__.' query<br><pre>'.print_r($query->dump(),true).'</pre>'),'Error');	
+}
             
             
-            //$app->enqueueMessage(JText::_(__METHOD__.' '.__LINE__.'<br><pre>'.print_r($query->dump(),true).'</pre>'),'');
             
-		//}
+
+            
         switch ( $persontype )
         {
             case 1:

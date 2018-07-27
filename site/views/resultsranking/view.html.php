@@ -12,8 +12,8 @@
 defined('_JEXEC') or die('Restricted access');
 
 require_once(JPATH_COMPONENT_SITE.DS.'helpers'.DS.'pagination.php');
-require_once(JPATH_COMPONENT_SITE.DS.'models'.DS.'ranking.php' );
-require_once(JPATH_COMPONENT_SITE.DS.'models'.DS.'results.php' );
+//require_once(JPATH_COMPONENT_SITE.DS.'models'.DS.'ranking.php' );
+//require_once(JPATH_COMPONENT_SITE.DS.'models'.DS.'results.php' );
 require_once(JPATH_COMPONENT_SITE.DS.'views'.DS.'results' . DS . 'view.html.php' );
 
 jimport('joomla.application.component.view');
@@ -87,7 +87,7 @@ class sportsmanagementViewResultsranking extends sportsmanagementView
 $routeparameter['cfg_which_database'] = $this->jinput->getInt('cfg_which_database',0);
 $routeparameter['s'] = $this->jinput->getInt('s',0);
 $routeparameter['p'] = $project->slug;
-$routeparameter['r'] = $this->roundid;
+$routeparameter['r'] = sportsmanagementModelProject::$roundslug;
 $routeparameter['division'] = 0;
 $routeparameter['mode'] = 0;
 $routeparameter['order'] = 0;
